@@ -1,8 +1,12 @@
 ﻿using Bogus;
 using ErpCrm.Application.Common.Interfaces;
+using ErpCrm.Application.Common.Options;
 using ErpCrm.Domain.Entities;
 using ErpCrm.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace ErpCrm.Infrastructure.Seed;
 
@@ -10,40 +14,110 @@ public class FakeDataSeeder : IFakeDataSeeder
 {
     private readonly IAppDbContext _context;
     private readonly IPasswordHasher _passwordHasher;
-
+    private readonly FakeDataOptions _options;
+    private readonly ILogger<FakeDataSeeder> _logger;
     public FakeDataSeeder(
-        IAppDbContext context,
-        IPasswordHasher passwordHasher)
+    IAppDbContext context,
+    IPasswordHasher passwordHasher,
+    IOptions<FakeDataOptions> options,
+    ILogger<FakeDataSeeder> logger)
     {
         _context = context;
         _passwordHasher = passwordHasher;
+        _options = options.Value;
+        _logger = logger;
     }
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        await SeedRolesAsync(cancellationToken);
+        var totalSw = Stopwatch.StartNew();
+
+        _logger.LogInformation("========== FAKE DATA SEED STARTED ==========");
+
+        await RunStepAsync("Roles", () => SeedRolesAsync(cancellationToken));
 
         var userCount = await _context.Users.CountAsync(cancellationToken);
-        if (userCount < 100)
-            await SeedUsersAsync(100 - userCount, cancellationToken);
+        if (userCount < _options.UserCount)
+        {
+            await RunStepAsync(
+                $"Users ({_options.UserCount - userCount})",
+                () => SeedUsersAsync(_options.UserCount - userCount, cancellationToken));
+        }
+        else
+        {
+            _logger.LogInformation(
+                "SKIPPED: Users | Current: {Current} | Target: {Target}",
+                userCount,
+                _options.UserCount);
+        }
 
         if (!await _context.Customers.AnyAsync(cancellationToken))
-            await SeedCustomersAsync(200, cancellationToken);
+            await RunStepAsync($"Customers ({_options.CustomerCount})", () => SeedCustomersAsync(_options.CustomerCount, cancellationToken));
+        else
+            _logger.LogInformation("SKIPPED: Customers already exist.");
 
         if (!await _context.Categories.AnyAsync(cancellationToken))
-            await SeedCategoriesAsync(cancellationToken);
+            await RunStepAsync("Categories", () => SeedCategoriesAsync(cancellationToken));
+        else
+            _logger.LogInformation("SKIPPED: Categories already exist.");
 
         if (!await _context.Products.AnyAsync(cancellationToken))
-            await SeedProductsAsync(500, cancellationToken);
+            await RunStepAsync($"Products ({_options.ProductCount})", () => SeedProductsAsync(_options.ProductCount, cancellationToken));
+        else
+            _logger.LogInformation("SKIPPED: Products already exist.");
 
         if (!await _context.Warehouses.AnyAsync(cancellationToken))
-            await SeedWarehousesAsync(cancellationToken);
+            await RunStepAsync("Warehouses", () => SeedWarehousesAsync(cancellationToken));
+        else
+            _logger.LogInformation("SKIPPED: Warehouses already exist.");
 
         if (!await _context.Stocks.AnyAsync(cancellationToken))
-            await SeedStocksAsync(cancellationToken);
+            await RunStepAsync("Stocks", () => SeedStocksAsync(cancellationToken));
+        else
+            _logger.LogInformation("SKIPPED: Stocks already exist.");
 
         if (!await _context.Orders.AnyAsync(cancellationToken))
-            await SeedOrdersAsync(2000, cancellationToken);
+            await RunStepAsync($"Orders ({_options.OrderCount})", () => SeedOrdersAsync(_options.OrderCount, cancellationToken));
+        else
+            _logger.LogInformation("SKIPPED: Orders already exist.");
+
+        totalSw.Stop();
+
+        _logger.LogInformation(
+            "========== FAKE DATA SEED FINISHED | TOTAL: {Seconds:N2}s ==========",
+            totalSw.Elapsed.TotalSeconds);
+    }
+
+    private async Task RunStepAsync(string stepName, Func<Task> action)
+    {
+        var sw = Stopwatch.StartNew();
+
+        _logger.LogInformation("STARTING: {Step}", stepName);
+
+        try
+        {
+            await action();
+
+            sw.Stop();
+
+            _logger.LogInformation(
+                "COMPLETED: {Step} | Duration: {Seconds:N2}s",
+                stepName,
+                sw.Elapsed.TotalSeconds);
+        }
+        catch (Exception ex)
+        {
+            sw.Stop();
+
+            _logger.LogError(
+                ex,
+                "FAILED: {Step} | Duration: {Seconds:N2}s | Error: {Message}",
+                stepName,
+                sw.Elapsed.TotalSeconds,
+                ex.Message);
+
+            throw;
+        }
     }
 
     private async Task SeedRolesAsync(CancellationToken cancellationToken)
@@ -52,9 +126,15 @@ public class FakeDataSeeder : IFakeDataSeeder
             .Select(x => x.Name)
             .ToListAsync(cancellationToken);
 
-        var roleNames = new[] { "Admin", "Manager", "Employee" };
+        var roleNames = new[]
+        {
+        "Admin",
+        "Manager",
+        "Employee"
+    };
 
-        foreach (var roleName in roleNames.Where(x => !existingRoleNames.Contains(x)))
+        foreach (var roleName in roleNames
+                     .Where(x => !existingRoleNames.Contains(x)))
         {
             await _context.Roles.AddAsync(new Role
             {
@@ -80,12 +160,11 @@ public class FakeDataSeeder : IFakeDataSeeder
         var passwordHash = _passwordHasher.Hash("Admin123*");
 
         var existingEmails = await _context.Users
-            .Select(x => x.Email)
+            .IgnoreQueryFilters()
+            .Select(x => x.Email.ToLower())
             .ToListAsync(cancellationToken);
 
-        var existingEmailSet = existingEmails
-            .Select(x => x.ToLower())
-            .ToHashSet();
+        var existingEmailSet = existingEmails.ToHashSet();
 
         var usersToAdd = new List<User>();
 
@@ -110,6 +189,7 @@ public class FakeDataSeeder : IFakeDataSeeder
 
             usersToAdd.Add(admin);
             existingEmailSet.Add(adminEmail);
+
             count--;
         }
 
@@ -147,15 +227,26 @@ public class FakeDataSeeder : IFakeDataSeeder
             usersToAdd.Add(user);
             existingEmailSet.Add(email);
             fakeUserCount++;
+
+            if (fakeUserCount % 1000 == 0)
+            {
+                _logger.LogInformation(
+                    "USERS GENERATED: {Generated}/{Target}",
+                    fakeUserCount,
+                    count);
+            }
         }
 
         if (usersToAdd.Any())
         {
             await _context.Users.AddRangeAsync(usersToAdd, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "USERS SAVED: {Count}",
+                usersToAdd.Count);
         }
     }
-
     private async Task SeedCustomersAsync(int count, CancellationToken cancellationToken)
     {
         var cities = new[]
@@ -185,6 +276,8 @@ public class FakeDataSeeder : IFakeDataSeeder
 
         await _context.Customers.AddRangeAsync(customers, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("CUSTOMERS SAVED: {Count}", customers.Count);
     }
 
     private async Task SeedCategoriesAsync(CancellationToken cancellationToken)
@@ -205,6 +298,8 @@ public class FakeDataSeeder : IFakeDataSeeder
 
         await _context.Categories.AddRangeAsync(categories, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("CATEGORIES SAVED: {Count}", categories.Count);
     }
 
     private async Task SeedProductsAsync(int count, CancellationToken cancellationToken)
@@ -226,7 +321,9 @@ public class FakeDataSeeder : IFakeDataSeeder
         await _context.Products.AddRangeAsync(products, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        await SeedProductVariantsAndImagesAsync(cancellationToken);
+        _logger.LogInformation("PRODUCTS SAVED: {Count}", products.Count);
+
+        await RunStepAsync("Product Variants & Images", () => SeedProductVariantsAndImagesAsync(cancellationToken));
     }
 
     private async Task SeedProductVariantsAndImagesAsync(CancellationToken cancellationToken)
@@ -244,7 +341,7 @@ public class FakeDataSeeder : IFakeDataSeeder
 
             for (var i = 0; i < variantCount; i++)
             {
-                variants.Add(new ProductVariant
+                var variant = new ProductVariant
                 {
                     ProductId = product.Id,
                     VariantCode = $"{product.SKU}-V{i + 1}",
@@ -254,7 +351,9 @@ public class FakeDataSeeder : IFakeDataSeeder
                     StockQuantity = Random.Shared.Next(20, 500),
                     IsActive = true,
                     CreatedDate = DateTime.UtcNow
-                });
+                };
+
+                variants.Add(variant);
             }
 
             images.Add(new ProductImage
@@ -271,6 +370,8 @@ public class FakeDataSeeder : IFakeDataSeeder
         await _context.ProductVariants.AddRangeAsync(variants, cancellationToken);
         await _context.ProductImages.AddRangeAsync(images, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("PRODUCT VARIANTS SAVED: {VariantCount} | PRODUCT IMAGES SAVED: {ImageCount}", variants.Count, images.Count);
     }
 
     private async Task SeedWarehousesAsync(CancellationToken cancellationToken)
@@ -286,6 +387,8 @@ public class FakeDataSeeder : IFakeDataSeeder
 
         await _context.Warehouses.AddRangeAsync(warehouses, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("WAREHOUSES SAVED: {Count}", warehouses.Count);
     }
 
     private async Task SeedStocksAsync(CancellationToken cancellationToken)
@@ -342,6 +445,8 @@ public class FakeDataSeeder : IFakeDataSeeder
 
         await _context.Stocks.AddRangeAsync(stocks, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("STOCKS SAVED: {Count}", stocks.Count);
     }
 
     private async Task SeedOrdersAsync(int count, CancellationToken cancellationToken)
@@ -354,10 +459,34 @@ public class FakeDataSeeder : IFakeDataSeeder
             .Include(x => x.ProductVariant)
             .ToListAsync(cancellationToken);
 
+        if (!customers.Any())
+            throw new InvalidOperationException("Active customers must exist before seeding orders.");
+
+        if (!users.Any())
+            throw new InvalidOperationException("Active users must exist before seeding orders.");
+
+        if (!warehouses.Any())
+            throw new InvalidOperationException("Warehouses must exist before seeding orders.");
+
+        if (!stocks.Any())
+            throw new InvalidOperationException("Stocks must exist before seeding orders.");
+
         var orders = new List<Order>();
         var payments = new List<Payment>();
         var stockMovements = new List<StockMovement>();
         var notifications = new List<Notification>();
+
+        var batchSize = _options.BatchSize <= 0 ? 1000 : _options.BatchSize;
+
+        var generatedOrderCount = 0;
+        var savedOrderCount = 0;
+        var skippedOrderCount = 0;
+        var batchNumber = 1;
+
+        _logger.LogInformation(
+            "ORDER SEED CONFIG | Target: {Target} | BatchSize: {BatchSize}",
+            count,
+            batchSize);
 
         for (var i = 0; i < count; i++)
         {
@@ -373,7 +502,10 @@ public class FakeDataSeeder : IFakeDataSeeder
                 .ToList();
 
             if (!availableStocks.Any())
+            {
+                skippedOrderCount++;
                 continue;
+            }
 
             var order = new Order
             {
@@ -425,7 +557,10 @@ public class FakeDataSeeder : IFakeDataSeeder
             }
 
             if (!order.Items.Any())
+            {
+                skippedOrderCount++;
                 continue;
+            }
 
             order.TotalAmount = totalAmount;
             orders.Add(order);
@@ -449,8 +584,95 @@ public class FakeDataSeeder : IFakeDataSeeder
                 ReadDate = Random.Shared.NextDouble() < 0.65 ? createdDate.AddHours(1) : null,
                 CreatedDate = createdDate
             });
+
+            generatedOrderCount++;
+
+            if (orders.Count >= batchSize)
+            {
+                var sw = Stopwatch.StartNew();
+
+                _logger.LogInformation(
+                    "ORDER BATCH STARTED | Batch: {BatchNumber} | PendingOrders: {OrderCount} | Generated: {Generated}/{Target} | Skipped: {Skipped}",
+                    batchNumber,
+                    orders.Count,
+                    generatedOrderCount,
+                    count,
+                    skippedOrderCount);
+
+                var savedInBatch = orders.Count;
+
+                await SaveOrderBatchAsync(
+                    orders,
+                    payments,
+                    stockMovements,
+                    notifications,
+                    cancellationToken);
+
+                savedOrderCount += savedInBatch;
+
+                sw.Stop();
+
+                _logger.LogInformation(
+                    "ORDER BATCH SAVED | Batch: {BatchNumber} | SavedInBatch: {SavedInBatch} | SavedTotal: {SavedTotal} | Duration: {Seconds:N2}s",
+                    batchNumber,
+                    savedInBatch,
+                    savedOrderCount,
+                    sw.Elapsed.TotalSeconds);
+
+                orders.Clear();
+                payments.Clear();
+                stockMovements.Clear();
+                notifications.Clear();
+
+                batchNumber++;
+            }
         }
 
+        if (orders.Any())
+        {
+            var sw = Stopwatch.StartNew();
+
+            _logger.LogInformation(
+                "FINAL ORDER BATCH STARTED | Batch: {BatchNumber} | PendingOrders: {OrderCount}",
+                batchNumber,
+                orders.Count);
+
+            var savedInBatch = orders.Count;
+
+            await SaveOrderBatchAsync(
+                orders,
+                payments,
+                stockMovements,
+                notifications,
+                cancellationToken);
+
+            savedOrderCount += savedInBatch;
+
+            sw.Stop();
+
+            _logger.LogInformation(
+                "FINAL ORDER BATCH SAVED | Batch: {BatchNumber} | SavedInBatch: {SavedInBatch} | SavedTotal: {SavedTotal} | Duration: {Seconds:N2}s",
+                batchNumber,
+                savedInBatch,
+                savedOrderCount,
+                sw.Elapsed.TotalSeconds);
+        }
+
+        _logger.LogInformation(
+            "ORDER SEED SUMMARY | Target: {Target} | Generated: {Generated} | Saved: {Saved} | Skipped: {Skipped}",
+            count,
+            generatedOrderCount,
+            savedOrderCount,
+            skippedOrderCount);
+    }
+
+    private async Task SaveOrderBatchAsync(
+        List<Order> orders,
+        List<Payment> payments,
+        List<StockMovement> stockMovements,
+        List<Notification> notifications,
+        CancellationToken cancellationToken)
+    {
         await _context.Orders.AddRangeAsync(orders, cancellationToken);
         await _context.Payments.AddRangeAsync(payments, cancellationToken);
         await _context.StockMovements.AddRangeAsync(stockMovements, cancellationToken);
@@ -519,12 +741,8 @@ public class FakeDataSeeder : IFakeDataSeeder
     private static PaymentStatus PickPaymentStatus(OrderStatus orderStatus)
     {
         if (orderStatus == OrderStatus.Cancelled)
-            return Random.Shared.NextDouble() < 0.4
-                ? PaymentStatus.Refunded
-                : PaymentStatus.Failed;
+            return Random.Shared.NextDouble() < 0.4 ? PaymentStatus.Refunded : PaymentStatus.Failed;
 
-        return Random.Shared.NextDouble() < 0.93
-            ? PaymentStatus.Paid
-            : PaymentStatus.Pending;
+        return Random.Shared.NextDouble() < 0.93 ? PaymentStatus.Paid : PaymentStatus.Pending;
     }
 }

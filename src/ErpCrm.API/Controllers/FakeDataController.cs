@@ -6,7 +6,7 @@ namespace ErpCrm.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+//[Authorize(Roles = "Admin")]
 public class FakeDataController : ControllerBase
 {
     private readonly IFakeDataSeeder _fakeDataSeeder;

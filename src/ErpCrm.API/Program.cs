@@ -26,7 +26,7 @@ builder.Host.UseSerilog((context, configuration) =>
 builder.Services.AddControllers();
 
 builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");

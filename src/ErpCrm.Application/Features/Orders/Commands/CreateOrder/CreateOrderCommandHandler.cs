@@ -2,6 +2,7 @@ using ErpCrm.Application.Common.Interfaces;
 using ErpCrm.Application.Common.Results;
 using ErpCrm.Domain.Entities;
 using ErpCrm.Domain.Enums;
+using ErpCrm.Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +17,22 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Res
         _context = context;
     }
 
-    public async Task<Result<int>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(
+        CreateOrderCommand request,
+        CancellationToken cancellationToken)
     {
         if (!request.Items.Any())
             return Result<int>.Fail("Order must contain at least one item");
 
-        var customerExists = await _context.Customers.AnyAsync(x => x.Id == request.CustomerId && x.IsActive, cancellationToken);
+        var customerExists = await _context.Customers
+            .AnyAsync(x => x.Id == request.CustomerId && x.IsActive, cancellationToken);
+
         if (!customerExists)
             return Result<int>.Fail("Active customer not found");
 
-        var userExists = await _context.Users.AnyAsync(x => x.Id == request.CreatedByUserId && x.IsActive, cancellationToken);
+        var userExists = await _context.Users
+            .AnyAsync(x => x.Id == request.CreatedByUserId && x.IsActive, cancellationToken);
+
         if (!userExists)
             return Result<int>.Fail("Active user not found");
 
@@ -45,14 +52,20 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Res
             if (requestItem.Quantity <= 0)
                 return Result<int>.Fail("Quantity must be greater than zero");
 
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == requestItem.ProductId && x.IsActive, cancellationToken);
+            var product = await _context.Products
+                .FirstOrDefaultAsync(
+                    x => x.Id == requestItem.ProductId && x.IsActive,
+                    cancellationToken);
+
             if (product is null)
                 return Result<int>.Fail($"Product not found: {requestItem.ProductId}");
 
-            var stock = await _context.Stocks.FirstOrDefaultAsync(x =>
-                x.ProductId == requestItem.ProductId &&
-                x.ProductVariantId == requestItem.ProductVariantId &&
-                x.WarehouseId == request.WarehouseId, cancellationToken);
+            var stock = await _context.Stocks
+                .FirstOrDefaultAsync(x =>
+                    x.ProductId == requestItem.ProductId &&
+                    x.ProductVariantId == requestItem.ProductVariantId &&
+                    x.WarehouseId == request.WarehouseId,
+                    cancellationToken);
 
             if (stock is null || stock.Quantity - stock.ReservedQuantity < requestItem.Quantity)
                 return Result<int>.Fail($"Insufficient stock for product: {product.Name}");
@@ -61,10 +74,12 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Res
 
             if (requestItem.ProductVariantId.HasValue)
             {
-                var variant = await _context.ProductVariants.FirstOrDefaultAsync(x =>
-                    x.Id == requestItem.ProductVariantId.Value &&
-                    x.ProductId == requestItem.ProductId &&
-                    x.IsActive, cancellationToken);
+                var variant = await _context.ProductVariants
+                    .FirstOrDefaultAsync(x =>
+                        x.Id == requestItem.ProductVariantId.Value &&
+                        x.ProductId == requestItem.ProductId &&
+                        x.IsActive,
+                        cancellationToken);
 
                 if (variant is null)
                     return Result<int>.Fail($"Product variant not found: {requestItem.ProductVariantId}");
@@ -103,26 +118,13 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Res
 
         order.TotalAmount = totalAmount;
 
+        order.AddDomainEvent(new OrderCreatedEvent(
+            order.OrderNumber,
+            order.CustomerId,
+            order.CreatedByUserId,
+            order.TotalAmount));
+
         await _context.Orders.AddAsync(order, cancellationToken);
-
-        await _context.Payments.AddAsync(new Payment
-        {
-            Order = order,
-            Amount = totalAmount,
-            Method = PaymentMethod.CreditCard,
-            Status = PaymentStatus.Paid,
-            PaidDate = DateTime.UtcNow,
-            CreatedDate = DateTime.UtcNow
-        }, cancellationToken);
-
-        await _context.Notifications.AddAsync(new Notification
-        {
-            UserId = request.CreatedByUserId,
-            Title = "New order created",
-            Message = $"{order.OrderNumber} order has been created.",
-            IsRead = false,
-            CreatedDate = DateTime.UtcNow
-        }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 
