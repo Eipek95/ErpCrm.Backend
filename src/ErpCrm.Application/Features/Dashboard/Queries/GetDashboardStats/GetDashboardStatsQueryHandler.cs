@@ -11,16 +11,26 @@ public class GetDashboardStatsQueryHandler
     : IRequestHandler<GetDashboardStatsQuery, Result<DashboardStatsDto>>
 {
     private readonly IAppDbContext _context;
+    private readonly ICacheService _cacheService;
 
-    public GetDashboardStatsQueryHandler(IAppDbContext context)
+    public GetDashboardStatsQueryHandler(IAppDbContext context, ICacheService cacheService)
     {
         _context = context;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<DashboardStatsDto>> Handle(
-        GetDashboardStatsQuery request,
-        CancellationToken cancellationToken)
+     GetDashboardStatsQuery request,
+     CancellationToken cancellationToken)
     {
+        const string cacheKey = "dashboard:stats";
+
+        var cached = await _cacheService
+            .GetAsync<DashboardStatsDto>(cacheKey);
+
+        if (cached is not null)
+            return Result<DashboardStatsDto>.Ok(cached);
+
         var totalOrders = await _context.Orders
             .AsNoTracking()
             .CountAsync(cancellationToken);
@@ -55,6 +65,11 @@ public class GetDashboardStatsQueryHandler
             LowStockCount = lowStockCount,
             PendingPayments = pendingPayments
         };
+
+        await _cacheService.SetAsync(
+            cacheKey,
+            dto,
+            TimeSpan.FromMinutes(5));
 
         return Result<DashboardStatsDto>.Ok(dto);
     }

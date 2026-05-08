@@ -1,12 +1,13 @@
 ﻿using ErpCrm.Application.Common.Interfaces;
 using ErpCrm.Application.Common.Options;
+using ErpCrm.Infrastructure.Caching;
 using ErpCrm.Infrastructure.CurrentUser;
 using ErpCrm.Infrastructure.Events;
 using ErpCrm.Infrastructure.Security;
 using ErpCrm.Infrastructure.Seed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using ErpCrm.Infrastructure.Caching;
 
 namespace ErpCrm.Infrastructure;
 
@@ -26,6 +27,13 @@ public static class ServiceRegistration
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IFakeDataSeeder, FakeDataSeeder>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration =
+                configuration["Redis:ConnectionString"];
+        });
+
+        services.AddScoped<ICacheService, RedisCacheService>();
         services.Configure<FakeDataOptions>(configuration.GetSection("FakeData"));
         return services;
     }

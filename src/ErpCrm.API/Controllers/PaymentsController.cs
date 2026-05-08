@@ -1,4 +1,5 @@
-﻿using ErpCrm.Application.Features.Payments.Commands.CreatePayment;
+﻿using ErpCrm.Application.Features.Payments.Commands.CompletePayment;
+using ErpCrm.Application.Features.Payments.Commands.CreatePayment;
 using ErpCrm.Application.Features.Payments.Commands.DeletePayment;
 using ErpCrm.Application.Features.Payments.Commands.UpdatePayment;
 using ErpCrm.Application.Features.Payments.Queries.GetPaymentById;
@@ -54,6 +55,17 @@ public class PaymentsController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _mediator.Send(new DeletePaymentCommand(id));
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpPost("{id:int}/complete")]
+    public async Task<IActionResult> Complete(
+    int id,
+    [FromBody] CompletePaymentCommand command)
+    {
+        command.PaymentId = id;
+
+        var result = await _mediator.Send(command);
         return StatusCode(result.StatusCode, result);
     }
 }

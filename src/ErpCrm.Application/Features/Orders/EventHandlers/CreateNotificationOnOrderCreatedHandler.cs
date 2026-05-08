@@ -1,5 +1,6 @@
 ﻿using ErpCrm.Application.Common.Interfaces;
 using ErpCrm.Domain.Entities;
+using ErpCrm.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

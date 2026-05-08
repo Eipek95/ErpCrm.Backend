@@ -1,4 +1,5 @@
-﻿using ErpCrm.Application.Features.Orders.Commands.CreateOrder;
+﻿using ErpCrm.Application.Features.Orders.Commands.CancelOrder;
+using ErpCrm.Application.Features.Orders.Commands.CreateOrder;
 using ErpCrm.Application.Features.Orders.Commands.DeleteOrder;
 using ErpCrm.Application.Features.Orders.Commands.UpdateOrder;
 using ErpCrm.Application.Features.Orders.Queries.GetOrderById;
@@ -54,4 +55,14 @@ public class OrdersController : ControllerBase
         var result = await _mediator.Send(new DeleteOrderCommand(id));
         return StatusCode(result.StatusCode, result);
     }
+    [HttpPost("{id:int}/cancel")]
+    public async Task<IActionResult> Cancel(int id, [FromBody] CancelOrderCommand command)
+    {
+        command.OrderId = id;
+
+        var result = await _mediator.Send(command);
+        return StatusCode(result.StatusCode, result);
+    }
+
+
 }
