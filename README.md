@@ -518,4 +518,4 @@ https://localhost:5001/swagger
 
 # 👨‍💻 Developer
 
-De
+Developed for learning enterprise backend architecture, scalability and production-grade API design.
