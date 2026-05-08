@@ -20,9 +20,9 @@ public class InvalidateDashboardCacheOnOrderCancelledHandler
         CancellationToken cancellationToken)
     {
         await _cacheService.RemoveAsync("dashboard:stats");
-
-        await _cacheService.RemoveAsync("dashboard:monthly-sales");
-
-        await _cacheService.RemoveAsync("dashboard:top-products");
+        await _cacheService.RemoveAsync($"dashboard:monthly-sales:{DateTime.UtcNow.Year}");
+        await _cacheService.RemoveAsync("dashboard:top-products:10");
+        await _cacheService.RemoveAsync("dashboard:warehouse-stock");
+        await _cacheService.RemoveAsync("dashboard:recent-orders:10");
     }
 }

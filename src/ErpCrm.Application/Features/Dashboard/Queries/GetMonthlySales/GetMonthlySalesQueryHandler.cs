@@ -12,17 +12,25 @@ public class GetMonthlySalesQueryHandler
     : IRequestHandler<GetMonthlySalesQuery, Result<List<MonthlySalesDto>>>
 {
     private readonly IAppDbContext _context;
-
-    public GetMonthlySalesQueryHandler(IAppDbContext context)
+    private readonly ICacheService _cacheService;
+    public GetMonthlySalesQueryHandler(IAppDbContext context, ICacheService cacheService)
     {
         _context = context;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<List<MonthlySalesDto>>> Handle(
-        GetMonthlySalesQuery request,
-        CancellationToken cancellationToken)
+     GetMonthlySalesQuery request,
+     CancellationToken cancellationToken)
     {
         var year = request.Year ?? DateTime.UtcNow.Year;
+        var cacheKey = $"dashboard:monthly-sales:{year}";
+
+        var cached = await _cacheService
+            .GetAsync<List<MonthlySalesDto>>(cacheKey);
+
+        if (cached is not null)
+            return Result<List<MonthlySalesDto>>.Ok(cached);
 
         var data = await _context.Orders
             .AsNoTracking()
@@ -62,6 +70,11 @@ public class GetMonthlySalesQueryHandler
                 };
             })
             .ToList();
+
+        await _cacheService.SetAsync(
+            cacheKey,
+            result,
+            TimeSpan.FromMinutes(10));
 
         return Result<List<MonthlySalesDto>>.Ok(result);
     }

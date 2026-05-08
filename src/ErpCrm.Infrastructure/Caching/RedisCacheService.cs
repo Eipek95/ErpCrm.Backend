@@ -18,15 +18,19 @@ public class RedisCacheService : ICacheService
         var data = await _cache.GetStringAsync(key);
 
         if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine($"CACHE MISS: {key}");
             return default;
+        }
+        Console.WriteLine($"CACHE HIT: {key}");
 
         return JsonSerializer.Deserialize<T>(data);
     }
 
     public async Task SetAsync<T>(
-        string key,
-        T value,
-        TimeSpan? expiration = null)
+     string key,
+     T value,
+     TimeSpan? expiration = null)
     {
         var options = new DistributedCacheEntryOptions
         {
@@ -37,10 +41,14 @@ public class RedisCacheService : ICacheService
         var json = JsonSerializer.Serialize(value);
 
         await _cache.SetStringAsync(key, json, options);
+
+        Console.WriteLine($"CACHE SET: {key}");
     }
 
     public async Task RemoveAsync(string key)
     {
         await _cache.RemoveAsync(key);
+
+        Console.WriteLine($"CACHE REMOVED: {key}");
     }
 }

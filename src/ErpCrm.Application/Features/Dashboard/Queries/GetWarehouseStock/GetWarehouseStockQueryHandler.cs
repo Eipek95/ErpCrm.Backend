@@ -10,16 +10,25 @@ public class GetWarehouseStockQueryHandler
     : IRequestHandler<GetWarehouseStockQuery, Result<List<WarehouseStockDto>>>
 {
     private readonly IAppDbContext _context;
-
-    public GetWarehouseStockQueryHandler(IAppDbContext context)
+    private readonly ICacheService _cacheService;
+    public GetWarehouseStockQueryHandler(IAppDbContext context, ICacheService cacheService)
     {
         _context = context;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<List<WarehouseStockDto>>> Handle(
-        GetWarehouseStockQuery request,
-        CancellationToken cancellationToken)
+    GetWarehouseStockQuery request,
+    CancellationToken cancellationToken)
     {
+        const string cacheKey = "dashboard:warehouse-stock";
+
+        var cached = await _cacheService
+            .GetAsync<List<WarehouseStockDto>>(cacheKey);
+
+        if (cached is not null)
+            return Result<List<WarehouseStockDto>>.Ok(cached);
+
         var data = await _context.Stocks
             .AsNoTracking()
             .GroupBy(x => new
@@ -38,6 +47,11 @@ public class GetWarehouseStockQueryHandler
             })
             .OrderByDescending(x => x.AvailableQuantity)
             .ToListAsync(cancellationToken);
+
+        await _cacheService.SetAsync(
+            cacheKey,
+            data,
+            TimeSpan.FromMinutes(10));
 
         return Result<List<WarehouseStockDto>>.Ok(data);
     }

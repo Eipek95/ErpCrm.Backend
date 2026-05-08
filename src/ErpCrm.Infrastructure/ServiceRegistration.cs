@@ -27,12 +27,12 @@ public static class ServiceRegistration
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IFakeDataSeeder, FakeDataSeeder>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration =
-                configuration["Redis:ConnectionString"];
-        });
-
+        //services.AddStackExchangeRedisCache(options =>
+        //{
+        //    options.Configuration =
+        //        configuration["Redis:ConnectionString"];
+        //});
+        services.AddDistributedMemoryCache();
         services.AddScoped<ICacheService, RedisCacheService>();
         services.Configure<FakeDataOptions>(configuration.GetSection("FakeData"));
         return services;
