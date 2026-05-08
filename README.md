@@ -1,213 +1,109 @@
 # ERP CRM Backend System
 
-> 🇹🇷 Türkçe açıklamalar için aşağıdaki bölümleri kullanabilirsiniz.
->
-> 🇬🇧 English explanations are available throughout the document.
+<p align="center">
+  <a href="#-türkçe-dokümantasyon">🇹🇷 Türkçe</a> |
+  <a href="#-english-documentation">🇬🇧 English</a>
+</p>
 
 ---
 
-# 🇹🇷 Türkçe Özet
+# 🇹🇷 Türkçe Dokümantasyon
 
 ## Proje Hakkında
 
 Bu proje, modern .NET teknolojileri kullanılarak geliştirilmiş production odaklı bir ERP / CRM backend sistemidir.
 
-Kullanılan temel teknolojiler:
+Amaç; gerçekçi veri üretebilen, ölçeklenebilir, modüler ve sürdürülebilir bir backend mimarisi oluşturmaktır.
 
-* ASP.NET Core Web API
-* Clean Architecture
-* CQRS
-* MediatR
-* Entity Framework Core
-* MSSQL
-* JWT Authentication
-* Serilog
-* FluentValidation
-* Bogus Fake Data Engine
+## Kullanılan Teknolojiler
 
-## Mevcut Özellikler
+- ASP.NET Core Web API
+- Entity Framework Core
+- MSSQL
+- Clean Architecture
+- CQRS
+- MediatR
+- JWT Authentication
+- Refresh Token
+- Role-based Authorization
+- Serilog
+- FluentValidation
+- Bogus Fake Data Engine
+- Swagger
 
-* JWT Authentication & Refresh Token
-* Role-based authorization
-* CQRS + MediatR mimarisi
-* FluentValidation pipeline
-* Global exception middleware
-* Result pattern
-* Audit logging sistemi
-* Fake data generator
-* Product variant & image sistemi
-* Soft delete desteği
-* Pagination / filtering / sorting / searching
-* Serilog logging
-* Swagger JWT integration
+## Mimari Yapı
+
+```txt
+ErpCrm.Backend
+├── ErpCrm.API
+├── ErpCrm.Application
+├── ErpCrm.Domain
+├── ErpCrm.Infrastructure
+└── ErpCrm.Persistence
+```
+
+## Katmanlar
+
+### ErpCrm.API
+Controller’lar, middleware’ler, Swagger, authentication ve HTTP pipeline yapılandırmalarını içerir.
+
+### ErpCrm.Application
+CQRS command/query yapıları, DTO’lar, validator’lar, MediatR handler’ları, Result Pattern ve servis interface’lerini içerir.
+
+### ErpCrm.Domain
+Entity’ler, enum’lar ve temel domain modellerini içerir.
+
+### ErpCrm.Infrastructure
+JWT servisleri, password hashing, current user servisleri, fake data seeder ve dış servis entegrasyonlarını içerir.
+
+### ErpCrm.Persistence
+DbContext, Fluent API configuration dosyaları, migration’lar ve database initialization yapısını içerir.
 
 ## Modüller
 
-* Users
-* Roles
-* Customers
-* Products
-* Categories
-* Warehouses
-* Stocks
-* Orders
-* Payments
-* Notifications
-* AuditLogs
-
-## Mimari
-
-```txt
-src
-├── ErpCrm.API
-├── ErpCrm.Application
-├── ErpCrm.Domain
-├── ErpCrm.Infrastructure
-└── ErpCrm.Persistence
-```
-
-## Planlanan Özellikler
-
-* Massive scale seeding (10k+ users / 100k+ orders)
-* Redis cache
-* Hangfire background jobs
-* Domain events
-* Dashboard analytics
-* Docker support
-* Unit & integration tests
-
----
-
-# 🇬🇧 English Documentation
-
-Production-oriented ERP / CRM backend system built with modern .NET architecture principles.
-
----
-
-# Overview
-
-This project is a scalable ERP/CRM backend application developed using:
-
-* ASP.NET Core Web API
-* Clean Architecture
-* CQRS Pattern
-* MediatR
-* Entity Framework Core
-* MSSQL
-* JWT Authentication
-* Serilog Logging
-* FluentValidation
-* Bogus Fake Data Generator
-
-The goal of this project is to simulate a real-world enterprise backend system with modular architecture, maintainability, scalability, and production-ready practices.
-
----
-
-# Architecture
-
-The project follows Clean Architecture principles.
-
-## Layers
-
-```txt
-src
-├── ErpCrm.API
-├── ErpCrm.Application
-├── ErpCrm.Domain
-├── ErpCrm.Infrastructure
-└── ErpCrm.Persistence
-```
-
-## Responsibilities
-
-### ErpCrm.API
-
-* Controllers
-* Middlewares
-* Authentication configuration
-* Swagger configuration
-* API pipeline
-
-### ErpCrm.Application
-
-* CQRS Commands & Queries
-* DTOs
-* Validators
-* MediatR Handlers
-* Interfaces
-* Behaviors
-* Result Pattern
-
-### ErpCrm.Domain
-
-* Entities
-* Enums
-* Base entities
-* Domain models
-
-### ErpCrm.Infrastructure
-
-* JWT services
-* Password hashing
-* Current user services
-* Logging integrations
-* Fake data seeding
-
-### ErpCrm.Persistence
-
-* DbContext
-* Entity configurations
-* Migrations
-* Fluent API mappings
-* Database initialization
-
----
-
-# Features
+- Users
+- Roles
+- Customers
+- Categories
+- Products
+- Product Variants
+- Product Images
+- Warehouses
+- Stocks
+- Stock Movements
+- Orders
+- Order Items
+- Payments
+- Notifications
+- Audit Logs
 
 ## Authentication & Authorization
 
-* JWT Authentication
-* Refresh Token support
-* Role-based authorization
-* Current user service
-* Secure password hashing
+Sistemde JWT tabanlı authentication yapısı bulunmaktadır.
 
-### Roles
+Özellikler:
 
-* Admin
-* Manager
-* Employee
+- Login
+- Register
+- Access Token
+- Refresh Token
+- Logout
+- Role-based Authorization
+- CurrentUserService
 
----
+Roller:
 
-# Modules
+```txt
+Admin
+Manager
+Employee
+```
 
-Implemented core ERP/CRM modules:
+## CQRS + MediatR
 
-* Users
-* Roles
-* Customers
-* Categories
-* Products
-* Product Variants
-* Product Images
-* Warehouses
-* Stocks
-* Stock Movements
-* Orders
-* Order Items
-* Payments
-* Notifications
-* Audit Logs
+Sistem CQRS pattern ile geliştirilmiştir.
 
----
-
-# CQRS + MediatR
-
-The system uses CQRS architecture with MediatR.
-
-Each feature contains:
+Her modül kendi command, query, handler, DTO ve validator dosyalarına sahiptir.
 
 ```txt
 Features
@@ -215,47 +111,31 @@ Features
     ├── Commands
     ├── Queries
     ├── DTOs
-    ├── Validators
-    └── Handlers
+    └── Validators
 ```
 
-Benefits:
+## Validation Pipeline
 
-* Separation of read/write logic
-* Better scalability
-* Cleaner architecture
-* Easier maintenance
-* Better testability
+FluentValidation, MediatR pipeline içine entegre edilmiştir.
 
----
-
-# Validation Pipeline
-
-FluentValidation is integrated into MediatR pipeline behavior.
-
-Validation runs automatically before handlers.
+Akış:
 
 ```txt
 Request
 → ValidationBehavior
-→ Validators
+→ Validator
 → Handler
+→ Result
+→ Controller
 ```
 
-No validation logic exists inside controllers.
+Bu sayede validation işlemleri controller veya handler içinde tekrarlanmaz.
 
----
+## Global Exception Middleware
 
-# Global Exception Handling
+Tüm beklenmeyen hatalar merkezi middleware tarafından yakalanır.
 
-Custom global exception middleware provides:
-
-* Standardized API responses
-* Validation error handling
-* TraceId support
-* Centralized exception logging
-
-## Standard Error Response
+Standart hata response formatı:
 
 ```json
 {
@@ -269,76 +149,47 @@ Custom global exception middleware provides:
 }
 ```
 
----
+## Result Pattern
 
-# Result Pattern
+Tüm handler response’ları standart `Result<T>` yapısı üzerinden döner.
 
-All handlers return standardized results.
+Bu yapı API response’larını merkezi ve okunabilir hale getirir.
 
-```csharp
-Result<T>
-```
+## Database
 
-Benefits:
+Veritabanı olarak MSSQL kullanılmaktadır.
 
-* Consistent API responses
-* Better error handling
-* Cleaner controller logic
+Özellikler:
 
----
+- EF Core
+- Fluent API
+- Proper foreign key ilişkileri
+- Index optimizasyonları
+- Soft delete
+- UTC date kullanımı
 
-# Database Design
+Tüm temel entity’lerde şu alanlar bulunur:
 
-## MSSQL + EF Core
-
-* Entity Framework Core
-* Fluent API configurations
-* Proper foreign key relationships
-* Index optimizations
-* Soft delete support
-* UTC date handling
-
-## Base Entity Fields
-
-All entities include:
-
-```csharp
+```txt
 CreatedDate
 UpdatedDate
 DeletedDate
 IsDeleted
 ```
 
----
+## Audit Logging
 
-# Logging
+Audit sistemi önemli işlemleri takip etmek için hazırlanmıştır.
 
-Serilog is configured for:
+Loglanan işlemler:
 
-* Request logging
-* Error logging
-* File logging
-* Console logging
+- Create
+- Update
+- Delete
+- Login
+- Stock changes
 
-Logs are stored in:
-
-```txt
-Logs/log-yyyyMMdd.txt
-```
-
----
-
-# Audit Logging
-
-Automatic audit logging system tracks:
-
-* Create operations
-* Update operations
-* Delete operations
-* Login actions
-* Stock movements
-
-Audit data includes:
+AuditLog alanları:
 
 ```txt
 UserId
@@ -350,202 +201,418 @@ IPAddress
 CreatedDate
 ```
 
----
+## Fake Data Engine
 
-# Fake Data Engine
+Bogus kullanılarak gerçekçi demo verileri üretilmektedir.
 
-Bogus is used to generate realistic ERP/CRM data.
+Mevcut fake data yapısı:
 
-## Current Seeder Features
+- Users
+- Customers
+- Categories
+- Products
+- Product Variants
+- Product Images
+- Warehouses
+- Stocks
+- Orders
+- Payments
+- Notifications
+- Stock Movements
 
-* Realistic users
-* Realistic customers
-* Product categories
-* Products with variants
-* Product images
-* Warehouses
-* Stocks
-* Orders
-* Payments
-* Notifications
-* Stock movements
+Simülasyon kuralları:
 
-## Simulation Rules
+- Bazı müşteriler aktif, bazıları pasif oluşturulur.
+- Bazı ürünler popüler olarak işaretlenir.
+- Hafta sonu sipariş yoğunluğu artırılır.
+- Gece saatlerinde daha az sipariş oluşturulur.
+- Sipariş oluşunca stok düşer.
+- Payment ve notification otomatik oluşur.
 
-* Some customers are active/passive
-* Some products are popular
-* Weekend orders are more frequent
-* Night orders are less frequent
-* Payments are distributed realistically
-* Stock decreases automatically during order generation
+## Swagger
 
----
+Swagger JWT authorization desteği ile yapılandırılmıştır.
 
-# Swagger
+Authorize butonu üzerinden Bearer token ile protected endpoint’ler test edilebilir.
 
-Swagger includes:
+## Performans Yaklaşımı
 
-* JWT authorization support
-* API documentation
-* Bearer token authentication
+Uygulamada şu performans pratikleri kullanılmaktadır:
 
----
+- AsNoTracking
+- Projection
+- DTO mapping
+- Pagination
+- Filtering
+- Sorting
+- Searching
+- N+1 problemini önleme
 
-# Performance Practices
+## Çalıştırma
 
-Implemented optimization practices:
-
-* AsNoTracking
-* Projection-based queries
-* Pagination
-* Filtering
-* Sorting
-* Searching
-* N+1 prevention
-* DTO projection
-
----
-
-# Current Progress
-
-Completed:
-
-* Clean Architecture setup
-* CQRS architecture
-* JWT auth system
-* Refresh token system
-* Role-based authorization
-* Global exception middleware
-* Validation pipeline
-* Audit logging
-* Fake data seeding
-* Product variant & image system
-* ERP entities and relationships
-
-Planned:
-
-* Massive data generation (10k users / 100k orders)
-* Domain events
-* Event-driven workflows
-* Redis caching
-* Hangfire background jobs
-* Dashboard analytics
-* Docker support
-* Unit & integration tests
-* Health checks
-* API versioning
-
----
-
-# Technologies
-
-## Backend
-
-* ASP.NET Core Web API
-* Entity Framework Core
-* MSSQL
-* MediatR
-* FluentValidation
-* Serilog
-* Bogus
-* Swagger
-
-## Architecture
-
-* Clean Architecture
-* CQRS
-* SOLID Principles
-* Dependency Injection
-* Feature-based folder structure
-
----
-
-# Running the Project
-
-## 1. Clone repository
-
-```bash
-git clone <repository-url>
-```
-
-## 2. Configure connection string
-
-Update:
-
-```txt
-appsettings.json
-```
-
-## 3. Run migrations
+### Migration
 
 ```bash
 dotnet ef database update --project ErpCrm.Persistence --startup-project ErpCrm.API
 ```
 
-## 4. Run project
+### API Çalıştırma
 
 ```bash
 dotnet run --project ErpCrm.API
 ```
 
----
-
-# Fake Data Seed
-
-Use fake data endpoint:
-
-```http
-POST /api/fakedata/seed
-```
-
-Admin authorization required.
-
----
-
-# Default Admin Account
+## Varsayılan Admin
 
 ```txt
 Email: admin@erpcrm.com
 Password: Admin123*
 ```
 
----
-
-# API Features
-
-List endpoints support:
-
-* Pagination
-* Searching
-* Filtering
-* Sorting
-
-Example:
+## Fake Data Seed
 
 ```http
-GET /api/products?page=1&pageSize=20&search=laptop&sortBy=name
+POST /api/fakedata/seed
 ```
+
+Admin yetkisi gerektirir.
+
+## Mevcut Durum
+
+Tamamlananlar:
+
+- Clean Architecture
+- CQRS
+- JWT Auth
+- Refresh Token
+- CurrentUserService
+- Role-based Authorization
+- Result Pattern
+- Global Exception Middleware
+- FluentValidation Pipeline
+- Serilog
+- AuditLog
+- Bogus Fake Data Seeder
+- Product Variant & Image sistemi
+- Order / Payment / Stock flow
+
+Planlananlar:
+
+- 10k users / 5k customers / 5k products / 100k orders massive seed
+- Domain Events
+- Event-driven workflow
+- Redis Cache
+- Hangfire Background Jobs
+- Dashboard Analytics
+- Health Checks
+- Docker
+- Unit & Integration Tests
 
 ---
 
-# Project Goals
+# 🇬🇧 English Documentation
 
-This project aims to demonstrate:
+## Project Overview
 
-* Enterprise backend architecture
-* Scalable ERP system design
-* Production-ready backend practices
-* Modern .NET backend engineering
-* Real-world business workflows
+This project is a production-oriented ERP / CRM backend system built with modern .NET technologies.
+
+The main goal is to create a scalable, modular, maintainable backend system capable of generating realistic enterprise-level data.
+
+## Technologies
+
+- ASP.NET Core Web API
+- Entity Framework Core
+- MSSQL
+- Clean Architecture
+- CQRS
+- MediatR
+- JWT Authentication
+- Refresh Token
+- Role-based Authorization
+- Serilog
+- FluentValidation
+- Bogus Fake Data Engine
+- Swagger
+
+## Architecture
+
+```txt
+ErpCrm.Backend
+├── ErpCrm.API
+├── ErpCrm.Application
+├── ErpCrm.Domain
+├── ErpCrm.Infrastructure
+└── ErpCrm.Persistence
+```
+
+## Layers
+
+### ErpCrm.API
+Contains controllers, middlewares, Swagger configuration, authentication configuration and HTTP pipeline setup.
+
+### ErpCrm.Application
+Contains CQRS commands, queries, DTOs, validators, MediatR handlers, Result Pattern and service interfaces.
+
+### ErpCrm.Domain
+Contains entities, enums and core domain models.
+
+### ErpCrm.Infrastructure
+Contains JWT services, password hashing, current user services, fake data seeding and external service integrations.
+
+### ErpCrm.Persistence
+Contains DbContext, Fluent API configurations, migrations and database initialization.
+
+## Modules
+
+- Users
+- Roles
+- Customers
+- Categories
+- Products
+- Product Variants
+- Product Images
+- Warehouses
+- Stocks
+- Stock Movements
+- Orders
+- Order Items
+- Payments
+- Notifications
+- Audit Logs
+
+## Authentication & Authorization
+
+The system uses JWT-based authentication.
+
+Features:
+
+- Login
+- Register
+- Access Token
+- Refresh Token
+- Logout
+- Role-based Authorization
+- CurrentUserService
+
+Roles:
+
+```txt
+Admin
+Manager
+Employee
+```
+
+## CQRS + MediatR
+
+The system is developed using the CQRS pattern.
+
+Each module has its own command, query, handler, DTO and validator files.
+
+```txt
+Features
+└── Products
+    ├── Commands
+    ├── Queries
+    ├── DTOs
+    └── Validators
+```
+
+## Validation Pipeline
+
+FluentValidation is integrated into the MediatR pipeline.
+
+Flow:
+
+```txt
+Request
+→ ValidationBehavior
+→ Validator
+→ Handler
+→ Result
+→ Controller
+```
+
+Validation logic is not repeated inside controllers or handlers.
+
+## Global Exception Middleware
+
+All unexpected exceptions are handled by a centralized middleware.
+
+Standard error response:
+
+```json
+{
+  "success": false,
+  "message": "Validation error",
+  "errors": [
+    "Email is required"
+  ],
+  "statusCode": 400,
+  "traceId": "..."
+}
+```
+
+## Result Pattern
+
+All handler responses use a standardized `Result<T>` structure.
+
+This keeps API responses consistent and readable.
+
+## Database
+
+MSSQL is used as the database.
+
+Features:
+
+- EF Core
+- Fluent API
+- Proper foreign key relationships
+- Index optimization
+- Soft delete
+- UTC date handling
+
+All core entities include:
+
+```txt
+CreatedDate
+UpdatedDate
+DeletedDate
+IsDeleted
+```
+
+## Audit Logging
+
+The audit system tracks important actions.
+
+Tracked actions:
+
+- Create
+- Update
+- Delete
+- Login
+- Stock changes
+
+AuditLog fields:
+
+```txt
+UserId
+Action
+EntityName
+OldValues
+NewValues
+IPAddress
+CreatedDate
+```
+
+## Fake Data Engine
+
+Bogus is used to generate realistic demo data.
+
+Current fake data structure:
+
+- Users
+- Customers
+- Categories
+- Products
+- Product Variants
+- Product Images
+- Warehouses
+- Stocks
+- Orders
+- Payments
+- Notifications
+- Stock Movements
+
+Simulation rules:
+
+- Some customers are active and some are passive.
+- Some products are marked as popular.
+- Weekend order density is increased.
+- Fewer orders are generated at night.
+- Stock is decreased when an order is created.
+- Payment and notification records are created automatically.
+
+## Swagger
+
+Swagger is configured with JWT authorization support.
+
+Protected endpoints can be tested using the Authorize button with a Bearer token.
+
+## Performance Practices
+
+The application uses the following performance practices:
+
+- AsNoTracking
+- Projection
+- DTO mapping
+- Pagination
+- Filtering
+- Sorting
+- Searching
+- N+1 prevention
+
+## Running the Project
+
+### Migration
+
+```bash
+dotnet ef database update --project ErpCrm.Persistence --startup-project ErpCrm.API
+```
+
+### Run API
+
+```bash
+dotnet run --project ErpCrm.API
+```
+
+## Default Admin
+
+```txt
+Email: admin@erpcrm.com
+Password: Admin123*
+```
+
+## Fake Data Seed
+
+```http
+POST /api/fakedata/seed
+```
+
+Admin authorization is required.
+
+## Current Status
+
+Completed:
+
+- Clean Architecture
+- CQRS
+- JWT Auth
+- Refresh Token
+- CurrentUserService
+- Role-based Authorization
+- Result Pattern
+- Global Exception Middleware
+- FluentValidation Pipeline
+- Serilog
+- AuditLog
+- Bogus Fake Data Seeder
+- Product Variant & Image system
+- Order / Payment / Stock flow
+
+Planned:
+
+- 10k users / 5k customers / 5k products / 100k orders massive seed
+- Domain Events
+- Event-driven workflow
+- Redis Cache
+- Hangfire Background Jobs
+- Dashboard Analytics
+- Health Checks
+- Docker
+- Unit & Integration Tests
 
 ---
 
 # License
 
 This project is developed for educational and portfolio purposes.
-
----
-
-# Author
-
-Developed with modern enterprise backend architecture practices using .NET ecosystem.
