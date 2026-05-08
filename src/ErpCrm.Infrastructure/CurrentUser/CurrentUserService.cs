@@ -1,6 +1,6 @@
 ﻿using ErpCrm.Application.Common.Interfaces;
+using ErpCrm.Application.Common.Models;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace ErpCrm.Infrastructure.CurrentUser;
 
@@ -13,44 +13,18 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public int? UserId
-    {
-        get
-        {
-            var userId = _httpContextAccessor.HttpContext?
-                .User?
-                .FindFirst(ClaimTypes.NameIdentifier)?
-                .Value;
+    private CurrentUserModel? CurrentUser =>
+        _httpContextAccessor.HttpContext?.Items["CurrentUser"] as CurrentUserModel;
 
-            return int.TryParse(userId, out var id)
-                ? id
-                : null;
-        }
-    }
+    public int? UserId => CurrentUser?.UserId;
 
-    public string? Email =>
-        _httpContextAccessor.HttpContext?
-            .User?
-            .FindFirst(ClaimTypes.Email)?
-            .Value;
+    public string? Email => CurrentUser?.Email;
 
-    public string? FullName =>
-        _httpContextAccessor.HttpContext?
-            .User?
-            .FindFirst(ClaimTypes.Name)?
-            .Value;
+    public string? FullName => CurrentUser?.FullName;
 
     public IReadOnlyList<string> Roles =>
-        _httpContextAccessor.HttpContext?
-            .User?
-            .FindAll(ClaimTypes.Role)
-            .Select(x => x.Value)
-            .ToList()
-        ?? new List<string>();
+        CurrentUser?.Roles ?? new List<string>();
 
     public bool IsAuthenticated =>
-        _httpContextAccessor.HttpContext?
-            .User?
-            .Identity?
-            .IsAuthenticated ?? false;
+        CurrentUser is not null;
 }

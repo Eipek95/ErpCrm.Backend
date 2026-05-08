@@ -7,4 +7,10 @@ public static class MiddlewareExtensions
     {
         return app.UseMiddleware<GlobalExceptionMiddleware>();
     }
+
+    public static IApplicationBuilder UseCurrentUserMiddleware(
+        this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<CurrentUserMiddleware>();
+    }
 }

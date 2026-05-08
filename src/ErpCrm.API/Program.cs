@@ -118,6 +118,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.UseCurrentUserMiddleware();
 app.UseAuthorization();
 
 app.MapControllers();
