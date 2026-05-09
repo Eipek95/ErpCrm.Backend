@@ -2,24 +2,14 @@
 
 <div align="center">
 
-![.NET](https://img.shields.io/badge/.NET-9.0-purple)
+![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-blue)
 ![CQRS](https://img.shields.io/badge/Pattern-CQRS-green)
-![Redis](https://img.shields.io/badge/Cache-Distributed%20Cache-red)
+![Cache](https://img.shields.io/badge/Cache-Distributed%20Cache-red)
 ![MediatR](https://img.shields.io/badge/MediatR-Event%20Driven-orange)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
 Production-ready ERP / CRM Backend System built with modern .NET technologies.
-
-</div>
-
----
-
-<div align="center">
-
-[🇹🇷 Türkçe](#-türkçe-dokümantasyon)
-|
-[🇬🇧 English](#-english-documentation)
 
 </div>
 
@@ -83,20 +73,73 @@ Handlers:
 # 🚀 Kullanılan Teknolojiler
 
 * ASP.NET Core Web API
+* .NET 10
 * Entity Framework Core
 * MSSQL
 * MediatR
 * CQRS
 * FluentValidation
 * JWT Authentication
-* Role Based Authorization
 * Distributed Cache
 * Memory Cache / Redis Ready
 * Serilog
 * Domain Events
+* Hangfire
 * Soft Delete
 * Global Exception Middleware
 * Fake Data Generator
+* Health Checks
+
+---
+
+# 🏢 Enterprise Features
+
+## Implemented Enterprise Concepts
+
+```txt
+✔ Clean Architecture
+✔ CQRS
+✔ Domain Events
+✔ Distributed Cache
+✔ Cache Invalidation
+✔ Background Jobs
+✔ Health Checks
+✔ Fake Massive Data Engine
+✔ Audit Logging
+✔ Soft Delete
+✔ Stock Reservation Logic
+✔ Payment Workflow
+✔ Dashboard Analytics
+✔ SQL Index Optimization
+✔ Batch Processing
+✔ Event Driven Architecture
+```
+
+---
+
+# ⚙️ System Flow
+
+## Order Creation Flow
+
+```txt
+CreateOrderCommand
+        ↓
+Stock Validation
+        ↓
+Stock Reservation
+        ↓
+Order Creation
+        ↓
+Payment Creation
+        ↓
+Notification Creation
+        ↓
+Audit Log Creation
+        ↓
+Domain Event Publish
+        ↓
+Dashboard Cache Invalidation
+```
 
 ---
 
@@ -184,6 +227,86 @@ InvalidateDashboardCacheHandler
 
 ---
 
+# 📦 Stock Management Logic
+
+The project includes real ERP stock management scenarios.
+
+## Features
+
+```txt
+✔ Warehouse-based stock tracking
+✔ Reserved stock calculation
+✔ Low stock detection
+✔ Stock movement history
+✔ Order-based stock reduction
+✔ Product variant stock support
+✔ Critical stock monitoring
+```
+
+---
+
+# 📈 Analytics System
+
+Dashboard analytics APIs are optimized for high-volume data access.
+
+## Analytics Features
+
+```txt
+✔ Monthly sales analytics
+✔ Warehouse stock analytics
+✔ Top selling products
+✔ Recent order tracking
+✔ Revenue calculations
+✔ Active customer statistics
+✔ Pending payment monitoring
+```
+
+---
+
+# 🧵 Background Job System
+
+The project includes scheduled background processing using Hangfire.
+
+## Active Jobs
+
+### LowStockCheckJob
+
+```txt
+Checks critical stock levels
+Creates notifications automatically
+Runs periodically
+```
+
+### NotificationCleanupJob
+
+```txt
+Cleans old notifications
+Applies soft delete logic
+Runs daily
+```
+
+---
+
+# 🩺 Health Monitoring
+
+The API contains health monitoring endpoints.
+
+## Health Endpoint
+
+```http
+GET /health
+```
+
+## Checks
+
+```txt
+✔ SQL Server connectivity
+✔ API status
+✔ Cache availability
+```
+
+---
+
 # 🧪 Fake Data Engine
 
 Projede massive data testleri için gelişmiş fake data sistemi bulunmaktadır.
@@ -212,6 +335,64 @@ Projede massive data testleri için gelişmiş fake data sistemi bulunmaktadır.
 
 ---
 
+# 🚀 Performance Optimizations
+
+The backend is optimized for large-scale ERP operations.
+
+## Implemented Optimizations
+
+```txt
+✔ AsNoTracking queries
+✔ Distributed cache
+✔ Batch save operations
+✔ Projection queries
+✔ SQL indexing
+✔ Query optimization
+✔ Event-based cache invalidation
+✔ Lightweight dashboard DTOs
+✔ Dapper-ready architecture
+```
+
+---
+
+# 🗄 SQL Index Optimization
+
+Critical database indexes were added for performance.
+
+## Indexed Tables
+
+```txt
+Orders
+OrderItems
+Products
+Customers
+Stocks
+Payments
+Notifications
+AuditLogs
+StockMovements
+```
+
+---
+
+# 🔍 Logging & Observability
+
+The project includes detailed structured logging.
+
+## Logging Features
+
+```txt
+✔ Cache hit/miss logs
+✔ Batch save duration logs
+✔ Background job logs
+✔ Request logs
+✔ Error logs
+✔ Seeder performance logs
+✔ Domain event logs
+```
+
+---
+
 # 🔐 Authentication & Authorization
 
 ## JWT Authentication
@@ -220,12 +401,20 @@ Projede massive data testleri için gelişmiş fake data sistemi bulunmaktadır.
 Bearer Token Authentication
 ```
 
-## Role Based Authorization
+## Planned Role Structures
 
 ```txt
 Admin
 Manager
 Employee
+```
+
+## Planned Authorization Policies
+
+```txt
+AdminOnly
+ManagerOrAdmin
+EmployeeOrAbove
 ```
 
 ---
@@ -251,8 +440,6 @@ src/
 
 ✅ JWT Authentication
 
-✅ Role Based Authorization
-
 ✅ Global Exception Middleware
 
 ✅ FluentValidation
@@ -275,21 +462,60 @@ src/
 
 ✅ Payment Management
 
+✅ Hangfire Jobs
+
+✅ Health Checks
+
+✅ SQL Index Optimization
+
 ---
 
-# 🔜 Roadmap
+# 🧪 Large Scale Data Testing
 
-## Yakında Eklenecekler
+The project is designed for massive ERP load simulations.
 
-* Hangfire Background Jobs
-* Low Stock Scheduled Jobs
-* Docker Support
-* Health Checks
-* Massive Load Tests (100k+)
-* SQL Index Optimization
-* Outbox Pattern
-* Integration Tests
-* Frontend Admin Panel
+## Planned Load Tests
+
+```txt
+10K Orders
+50K Orders
+100K Orders
+1M+ Future Goal
+```
+
+## Seeder Capabilities
+
+```txt
+✔ Massive order generation
+✔ Warehouse stock generation
+✔ Fake payment generation
+✔ Notification generation
+✔ Relationship-aware data creation
+✔ Batch insert support
+```
+
+---
+
+# 🔮 Planned Enterprise Features
+
+## Future Improvements
+
+```txt
+✔ Redis Distributed Cache
+✔ RabbitMQ Integration
+✔ Outbox Pattern
+✔ SignalR Realtime Notifications
+✔ Docker Support
+✔ Kubernetes Deployment
+✔ CI/CD Pipelines
+✔ Integration Testing
+✔ Unit Testing
+✔ Multi Tenant Architecture
+✔ File Storage Service
+✔ Email Queue System
+✔ Refresh Token Flow
+✔ Permission-based Authorization
+```
 
 ---
 
@@ -316,206 +542,32 @@ https://localhost:5001/swagger
 
 ---
 
-# 📬 API Documentation
+# 🧠 Architectural Goals
 
-Swagger UI üzerinden tüm endpointler test edilebilir.
+This project aims to simulate real-world enterprise backend development practices.
 
----
-
-# 🌍 English Documentation
-
-## 📌 About The Project
-
-This project is a production-ready ERP / CRM backend system developed using modern .NET technologies.
-
-Goals:
-
-* Build scalable backend architecture
-* Apply real enterprise architecture patterns
-* Use CQRS + Domain Events + Distributed Cache architecture
-* Perform large-scale data load testing
-* Simulate real ERP / CRM business scenarios
-
----
-
-# 🏗 Architecture
-
-## Clean Architecture
+## Main Goals
 
 ```txt
-Presentation
-↓
-Application
-↓
-Domain
-↓
-Infrastructure
-↓
-Persistence
-```
-
-## CQRS Architecture
-
-```txt
-Commands → Write Operations
-Queries  → Read Operations
-```
-
-## Event Driven Architecture
-
-```txt
-CreateOrderCommand
-↓
-OrderCreatedEvent
-↓
-Handlers:
-- CreatePayment
-- CreateNotification
-- CreateAuditLog
-- InvalidateDashboardCache
+✔ Enterprise backend architecture
+✔ Scalable ERP infrastructure
+✔ High-volume data optimization
+✔ Event-driven system design
+✔ Production-grade API development
+✔ Modern .NET backend practices
+✔ Distributed system preparation
 ```
 
 ---
 
-# 🚀 Technologies
+# 👨‍💻 Project Purpose
 
-* ASP.NET Core Web API
-* Entity Framework Core
-* MSSQL
-* MediatR
-* CQRS
-* FluentValidation
-* JWT Authentication
-* Role Based Authorization
-* Distributed Cache
-* Memory Cache / Redis Ready
-* Serilog
-* Domain Events
-* Soft Delete
-* Global Exception Middleware
-* Fake Data Generator
+This project is being developed to improve knowledge in:
 
----
-
-# 📊 Dashboard APIs
-
-```http
-GET /api/dashboard/stats
-GET /api/dashboard/monthly-sales
-GET /api/dashboard/top-products
-GET /api/dashboard/warehouse-stock
-GET /api/dashboard/recent-orders
-```
-
----
-
-# ⚡ Distributed Cache
-
-Dashboard endpoints are optimized with distributed cache.
-
-## Cached Endpoints
-
-| Endpoint        | Cache Key                       |
-| --------------- | ------------------------------- |
-| Dashboard Stats | dashboard:stats                 |
-| Monthly Sales   | dashboard:monthly-sales:{year}  |
-| Top Products    | dashboard:top-products:{count}  |
-| Warehouse Stock | dashboard:warehouse-stock       |
-| Recent Orders   | dashboard:recent-orders:{count} |
-
----
-
-# 🧠 Domain Events
-
-The system is designed with event-driven architecture.
-
-## Implemented Domain Events
-
-```txt
-OrderCreatedEvent
-OrderCancelledEvent
-PaymentCompletedEvent
-```
-
----
-
-# 🧪 Fake Data Engine
-
-The project contains an advanced fake data engine for massive data testing.
-
-## Features
-
-* Batch insert system
-* Progress logging
-* Massive data generation
-* Relationship aware seed structure
-* Order / Stock / Payment generation
-* Admin user auto creation
-* Role based seed data
-
----
-
-# 📌 Completed Systems
-
-✅ Clean Architecture
-
-✅ CQRS
-
-✅ JWT Authentication
-
-✅ Role Based Authorization
-
-✅ FluentValidation
-
-✅ Distributed Cache
-
-✅ Cache Invalidation
-
-✅ Domain Events
-
-✅ Fake Data Generator
-
-✅ Dashboard Analytics APIs
-
----
-
-# 🔜 Roadmap
-
-* Hangfire Background Jobs
-* Low Stock Scheduled Jobs
-* Docker Support
-* Health Checks
-* Massive Load Tests (100k+)
-* SQL Index Optimization
-* Outbox Pattern
-* Integration Tests
-* Frontend Admin Panel
-
----
-
-# ▶️ Run The Project
-
-## Migration
-
-```bash
-add-migration InitialCreate
-update-database
-```
-
-## Run API
-
-```bash
-dotnet run
-```
-
-## Swagger
-
-```txt
-https://localhost:5001/swagger
-```
-
----
-
-# 👨‍💻 Developer
-
-Developed for learning enterprise backend architecture, scalability and production-grade API design.
+* Enterprise software architecture
+* Scalable backend systems
+* ERP/CRM business logic
+* High-performance API development
+* Distributed system design
+* Event-driven architectures
+* Production-ready .NET backend development
