@@ -33,6 +33,7 @@ namespace ErpCrm.Persistence.Configurations
             builder.HasIndex(x => x.MovementType);
             builder.HasIndex(x => x.CreatedDate);
             builder.HasIndex(x => x.IsDeleted);
+            builder.HasIndex(x => x.ReferenceNumber);
         }
     }
 }

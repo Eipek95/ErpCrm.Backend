@@ -1,14 +1,19 @@
+using ErpCrm.API.Middlewares;
 using ErpCrm.Application;
 using ErpCrm.Infrastructure;
+using ErpCrm.Infrastructure.BackgroundJobs;
 using ErpCrm.Persistence;
 using ErpCrm.Persistence.Context;
 using ErpCrm.Persistence.Seed;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
 using System.Text;
-using ErpCrm.API.Middlewares;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,11 +29,22 @@ builder.Host.UseSerilog((context, configuration) =>
 });
 
 builder.Services.AddControllers();
-
+builder.Services
+    .AddHealthChecks()
+    .AddSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")!);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddHangfire(config =>
+{
+    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180);
+    config.UseSimpleAssemblyNameTypeSerializer();
+    config.UseRecommendedSerializerSettings();
+    config.UseMemoryStorage();
+});
 
+builder.Services.AddHangfireServer();
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
 builder.Services
@@ -118,9 +134,49 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.UseHangfireDashboard("/hangfire");
 app.UseCurrentUserMiddleware();
 app.UseAuthorization();
 
+//her 5 dakikada bir stokları kontrol eden arka plan işi
+RecurringJob.AddOrUpdate<LowStockCheckJob>(
+    "low-stock-check",
+    job => job.ExecuteAsync(),
+    "*/5 * * * *");
+
+//her gün okunmuş ve 30 günden eski bildirimleri temizleyen arka plan işi
+RecurringJob.AddOrUpdate<NotificationCleanupJob>(
+    "notification-cleanup",
+    job => job.ExecuteAsync(),
+    Cron.Daily);
+
+//sağlık kontrolü endpointi
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var response = new
+        {
+            status = report.Status.ToString(),
+            totalDuration = report.TotalDuration.TotalMilliseconds,
+            checks = report.Entries.Select(x => new
+            {
+                name = x.Key,
+                status = x.Value.Status.ToString(),
+                duration = x.Value.Duration.TotalMilliseconds,
+                error = x.Value.Exception?.Message
+            })
+        };
+
+        await context.Response.WriteAsync(
+            JsonSerializer.Serialize(response, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            }));
+    }
+});
 app.MapControllers();
 
 app.Run();

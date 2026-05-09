@@ -43,6 +43,13 @@ namespace ErpCrm.Persistence.Configurations
             builder.HasIndex(x => x.ProductVariantId);
             builder.HasIndex(x => x.WarehouseId);
             builder.HasIndex(x => x.IsDeleted);
+            builder.HasIndex(x => new
+            {
+                x.ProductId,
+                x.ProductVariantId,
+                x.WarehouseId
+            });
+
         }
     }
 }
