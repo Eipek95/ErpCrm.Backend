@@ -15,6 +15,205 @@ Production-ready ERP / CRM Backend System built with modern .NET technologies.
 
 ---
 
+# 🇬🇧 English Documentation
+
+## 📌 About The Project
+
+This project is a production-ready ERP / CRM backend system developed using modern .NET technologies.
+
+Main goals:
+
+* Build scalable backend architecture
+* Apply enterprise software patterns
+* Use CQRS + Domain Events + Distributed Cache architecture
+* Perform large-scale data testing
+* Simulate real ERP / CRM business scenarios
+
+---
+
+# 🏗 Architectures
+
+## Clean Architecture
+
+```txt
+Presentation
+↓
+Application
+↓
+Domain
+↓
+Infrastructure
+↓
+Persistence
+```
+
+## CQRS Architecture
+
+```txt
+Commands → Write Operations
+Queries  → Read Operations
+```
+
+## Event Driven Architecture
+
+```txt
+CreateOrderCommand
+↓
+OrderCreatedEvent
+↓
+Handlers:
+- CreatePayment
+- CreateNotification
+- CreateAuditLog
+- InvalidateDashboardCache
+```
+
+---
+
+# 🚀 Technologies
+
+* ASP.NET Core Web API
+* .NET 10
+* Entity Framework Core
+* MSSQL
+* MediatR
+* CQRS
+* FluentValidation
+* JWT Authentication
+* Distributed Cache
+* Memory Cache / Redis Ready
+* Serilog
+* Domain Events
+* Hangfire
+* Soft Delete
+* Global Exception Middleware
+* Fake Data Generator
+* Health Checks
+
+---
+
+# 🏢 Enterprise Features
+
+```txt
+✔ Clean Architecture
+✔ CQRS
+✔ Domain Events
+✔ Distributed Cache
+✔ Cache Invalidation
+✔ Background Jobs
+✔ Health Checks
+✔ Fake Massive Data Engine
+✔ Audit Logging
+✔ Soft Delete
+✔ Stock Reservation Logic
+✔ Payment Workflow
+✔ Dashboard Analytics
+✔ SQL Index Optimization
+✔ Batch Processing
+✔ Event Driven Architecture
+```
+
+---
+
+# 📊 Dashboard APIs
+
+```http
+GET /api/dashboard/stats
+GET /api/dashboard/monthly-sales
+GET /api/dashboard/top-products
+GET /api/dashboard/warehouse-stock
+GET /api/dashboard/recent-orders
+```
+
+---
+
+# ⚡ Distributed Cache
+
+Dashboard endpoints are optimized with distributed cache.
+
+## Cached Endpoints
+
+| Endpoint        | Cache Key                       |
+| --------------- | ------------------------------- |
+| Dashboard Stats | dashboard:stats                 |
+| Monthly Sales   | dashboard:monthly-sales:{year}  |
+| Top Products    | dashboard:top-products:{count}  |
+| Warehouse Stock | dashboard:warehouse-stock       |
+| Recent Orders   | dashboard:recent-orders:{count} |
+
+---
+
+# 🧠 Domain Events
+
+```txt
+OrderCreatedEvent
+OrderCancelledEvent
+PaymentCompletedEvent
+```
+
+---
+
+# 🧵 Background Jobs
+
+## Active Jobs
+
+* LowStockCheckJob
+* NotificationCleanupJob
+
+---
+
+# 🩺 Health Checks
+
+```http
+GET /health
+```
+
+---
+
+# 🚀 Performance Optimizations
+
+```txt
+✔ AsNoTracking queries
+✔ Batch save operations
+✔ Distributed cache
+✔ SQL indexing
+✔ Query optimization
+✔ Projection queries
+✔ Lightweight DTO usage
+```
+
+---
+
+# 🔮 Future Improvements
+
+```txt
+✔ Redis Distributed Cache
+✔ RabbitMQ Integration
+✔ SignalR Notifications
+✔ Docker Support
+✔ Kubernetes Deployment
+✔ CI/CD Pipelines
+✔ Integration Tests
+✔ Multi Tenant Architecture
+✔ File Storage Service
+✔ Refresh Token Flow
+```
+
+---
+
+# 👨‍💻 Purpose
+
+This project is being developed to improve knowledge in:
+
+* Enterprise software architecture
+* ERP / CRM business logic
+* High-performance backend systems
+* Event-driven architecture
+* Distributed system design
+* Production-grade API development
+
+---
+
 # 🇹🇷 Türkçe Dokümantasyon
 
 ## 📌 Proje Hakkında
@@ -571,3 +770,7 @@ This project is being developed to improve knowledge in:
 * Distributed system design
 * Event-driven architectures
 * Production-ready .NET backend development
+
+---
+
+# 🇹🇷 Türkçe Dokümantasyon
