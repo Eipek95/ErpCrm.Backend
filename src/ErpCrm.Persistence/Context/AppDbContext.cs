@@ -11,15 +11,18 @@ public class AppDbContext : DbContext, IAppDbContext
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly IDomainEventDispatcher _domainEventDispatcher;
+    private readonly ICurrentRequestService _currentRequestService;
 
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
         ICurrentUserService currentUserService,
-        IDomainEventDispatcher domainEventDispatcher)
+        IDomainEventDispatcher domainEventDispatcher,
+        ICurrentRequestService currentRequestService)
         : base(options)
     {
         _currentUserService = currentUserService;
         _domainEventDispatcher = domainEventDispatcher;
+        _currentRequestService = currentRequestService;
     }
 
     public DbSet<User> Users => Set<User>();
@@ -39,6 +42,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<ProductImage> ProductImages => Set<ProductImage>();
 
+    public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
     public override async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
@@ -122,12 +126,21 @@ public class AppDbContext : DbContext, IAppDbContext
                 UserId = _currentUserService.UserId,
                 Action = action,
                 EntityName = entry.Entity.GetType().Name,
+
                 OldValues = entry.State == EntityState.Modified
-                    ? JsonSerializer.Serialize(GetOldValues(entry))
-                    : null,
+                ? JsonSerializer.Serialize(GetOldValues(entry))
+                : null,
+
                 NewValues = entry.State is EntityState.Added or EntityState.Modified
-                    ? JsonSerializer.Serialize(GetNewValues(entry))
-                    : null,
+                ? JsonSerializer.Serialize(GetNewValues(entry))
+                : null,
+
+                IpAddress = _currentRequestService.GetIpAddress(),
+                UserAgent = _currentRequestService.GetUserAgent(),
+                Endpoint = _currentRequestService.GetEndpoint(),
+                HttpMethod = _currentRequestService.GetHttpMethod(),
+                CorrelationId = _currentRequestService.GetCorrelationId(),
+                ExecutionTimeMs = _currentRequestService.GetExecutionTimeMs(),
                 CreatedDate = DateTime.UtcNow
             };
 

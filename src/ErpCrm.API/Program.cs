@@ -14,8 +14,11 @@ using Microsoft.OpenApi;
 using Serilog;
 using System.Text;
 using System.Text.Json;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 builder.Host.UseSerilog((context, configuration) =>
 {
@@ -41,7 +44,9 @@ builder.Services.AddHangfire(config =>
     config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180);
     config.UseSimpleAssemblyNameTypeSerializer();
     config.UseRecommendedSerializerSettings();
-    config.UseMemoryStorage();
+    // config.UseMemoryStorage();
+    config.UseSqlServerStorage(
+     builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddHangfireServer();
@@ -80,6 +85,24 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Admin", "Manager", "Employee"));
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy("GlobalFixedPolicy", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.User.Identity?.Name
+                          ?? context.Connection.RemoteIpAddress?.ToString()
+                          ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            }));
+});
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
@@ -114,6 +137,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+
 app.UseGlobalExceptionMiddleware();
 
 using (var scope = app.Services.CreateScope())
@@ -123,6 +148,8 @@ using (var scope = app.Services.CreateScope())
 
     await DbInitializer.SeedAsync(dbContext);
 }
+app.UseRequestTimingMiddleware();
+app.UseRequestLoggingMiddleware();
 app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
@@ -136,6 +163,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseHangfireDashboard("/hangfire");
 app.UseCurrentUserMiddleware();
+app.UseRateLimiter();
 app.UseAuthorization();
 
 //her 5 dakikada bir stokları kontrol eden arka plan işi
@@ -177,6 +205,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions
             }));
     }
 });
-app.MapControllers();
+app.MapControllers()
+   .RequireRateLimiting("GlobalFixedPolicy");
 
 app.Run();

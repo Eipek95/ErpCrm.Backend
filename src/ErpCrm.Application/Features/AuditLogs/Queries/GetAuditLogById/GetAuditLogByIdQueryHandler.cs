@@ -11,7 +11,7 @@ public class GetAuditLogByIdQueryHandler : IRequestHandler<GetAuditLogByIdQuery,
     public GetAuditLogByIdQueryHandler(IAppDbContext context) => _context = context;
     public async Task<Result<AuditLogDto>> Handle(GetAuditLogByIdQuery request, CancellationToken cancellationToken)
     {
-        var item = await _context.AuditLogs.AsNoTracking().Where(x => x.Id == request.Id).Select(x => new AuditLogDto { Id = x.Id, UserId = x.UserId, Action = x.Action, EntityName = x.EntityName, OldValues = x.OldValues, NewValues = x.NewValues, IPAddress = x.IPAddress, CreatedDate = x.CreatedDate }).FirstOrDefaultAsync(cancellationToken);
+        var item = await _context.AuditLogs.AsNoTracking().Where(x => x.Id == request.Id).Select(x => new AuditLogDto { Id = x.Id, UserId = x.UserId, Action = x.Action, EntityName = x.EntityName, OldValues = x.OldValues, NewValues = x.NewValues, IPAddress = x.IpAddress, CreatedDate = x.CreatedDate }).FirstOrDefaultAsync(cancellationToken);
         return item is null ? Result<AuditLogDto>.NotFound("AuditLog not found") : Result<AuditLogDto>.Ok(item);
     }
 }

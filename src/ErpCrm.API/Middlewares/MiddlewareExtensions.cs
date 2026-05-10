@@ -13,4 +13,16 @@ public static class MiddlewareExtensions
     {
         return app.UseMiddleware<CurrentUserMiddleware>();
     }
+
+    public static IApplicationBuilder UseRequestTimingMiddleware(
+    this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<RequestTimingMiddleware>();
+    }
+
+    public static IApplicationBuilder UseRequestLoggingMiddleware(
+    this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<RequestLoggingMiddleware>();
+    }
 }

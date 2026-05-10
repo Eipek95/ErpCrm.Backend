@@ -15,7 +15,7 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Resul
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             var search = request.Search.ToLower();
-            query = query.Where(x => x.Action.ToLower().Contains(search) || x.EntityName.ToLower().Contains(search) || (x.IPAddress != null && x.IPAddress.ToLower().Contains(search)));
+            query = query.Where(x => x.Action.ToLower().Contains(search) || x.EntityName.ToLower().Contains(search) || (x.IpAddress != null && x.IpAddress.ToLower().Contains(search)));
         }
         if (request.UserId.HasValue) query = query.Where(x => x.UserId == request.UserId.Value);
         if (!string.IsNullOrWhiteSpace(request.Action)) query = query.Where(x => x.Action == request.Action);
@@ -26,7 +26,7 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Resul
             _ => query.OrderByDescending(x => x.CreatedDate)
         };
         var totalCount = await query.CountAsync(cancellationToken);
-        var items = await query.Skip(request.Skip).Take(request.PageSize).Select(x => new AuditLogDto { Id = x.Id, UserId = x.UserId, Action = x.Action, EntityName = x.EntityName, OldValues = x.OldValues, NewValues = x.NewValues, IPAddress = x.IPAddress, CreatedDate = x.CreatedDate }).ToListAsync(cancellationToken);
+        var items = await query.Skip(request.Skip).Take(request.PageSize).Select(x => new AuditLogDto { Id = x.Id, UserId = x.UserId, Action = x.Action, EntityName = x.EntityName, OldValues = x.OldValues, NewValues = x.NewValues, IPAddress = x.IpAddress, CreatedDate = x.CreatedDate }).ToListAsync(cancellationToken);
         return Result<PagedResult<AuditLogDto>>.Ok(new PagedResult<AuditLogDto> { Items = items, Page = request.Page, PageSize = request.PageSize, TotalCount = totalCount });
     }
 }

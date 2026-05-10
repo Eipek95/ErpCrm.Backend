@@ -11,7 +11,7 @@ public class UpdateAuditLogCommandHandler : IRequestHandler<UpdateAuditLogComman
     {
         var entity = await _context.AuditLogs.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
         if (entity is null) return Result<bool>.NotFound("AuditLog not found");
-        entity.Action = request.Action; entity.EntityName = request.EntityName; entity.OldValues = request.OldValues; entity.NewValues = request.NewValues; entity.IPAddress = request.IPAddress;
+        entity.Action = request.Action; entity.EntityName = request.EntityName; entity.OldValues = request.OldValues; entity.NewValues = request.NewValues; entity.IpAddress = request.IPAddress;
         entity.UpdatedDate = DateTime.UtcNow;
         await _context.SaveChangesAsync(cancellationToken);
         return Result<bool>.Ok(true, "AuditLog updated successfully");

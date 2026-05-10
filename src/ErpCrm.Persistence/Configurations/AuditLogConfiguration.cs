@@ -26,7 +26,7 @@ namespace ErpCrm.Persistence.Configurations
             builder.Property(x => x.NewValues)
                 .HasColumnType("nvarchar(max)");
 
-            builder.Property(x => x.IPAddress)
+            builder.Property(x => x.IpAddress)
                 .HasMaxLength(60);
 
             builder.HasOne(x => x.User)
