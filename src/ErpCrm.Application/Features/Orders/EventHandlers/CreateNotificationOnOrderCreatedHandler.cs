@@ -10,13 +10,15 @@ public class CreateNotificationOnOrderCreatedHandler : INotificationHandler<Orde
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<CreateNotificationOnOrderCreatedHandler> _logger;
-
+    private readonly IRealtimeNotificationService _realtimeNotificationService;
     public CreateNotificationOnOrderCreatedHandler(
         IAppDbContext context,
-        ILogger<CreateNotificationOnOrderCreatedHandler> logger)
+        ILogger<CreateNotificationOnOrderCreatedHandler> logger,
+        IRealtimeNotificationService realtimeNotificationService)
     {
         _context = context;
         _logger = logger;
+        _realtimeNotificationService = realtimeNotificationService;
     }
 
     public async Task Handle(OrderCreatedEvent notification, CancellationToken cancellationToken)
@@ -31,6 +33,13 @@ public class CreateNotificationOnOrderCreatedHandler : INotificationHandler<Orde
         }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+
+        await _realtimeNotificationService.SendNotificationAsync(
+            "New order created",
+            $"{notification.OrderNumber} order has been created.",
+            cancellationToken);
+
 
         _logger.LogInformation(
             "Notification created for order. OrderNumber: {OrderNumber}",

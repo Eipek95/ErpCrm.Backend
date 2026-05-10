@@ -9,10 +9,11 @@ public class CreateNotificationOnPaymentCompletedHandler
     : INotificationHandler<PaymentCompletedEvent>
 {
     private readonly IAppDbContext _context;
-
-    public CreateNotificationOnPaymentCompletedHandler(IAppDbContext context)
+    private readonly IRealtimeNotificationService _realtimeNotificationService;
+    public CreateNotificationOnPaymentCompletedHandler(IAppDbContext context, IRealtimeNotificationService realtimeNotificationService)
     {
         _context = context;
+        _realtimeNotificationService = realtimeNotificationService;
     }
 
     public async Task Handle(
@@ -29,5 +30,9 @@ public class CreateNotificationOnPaymentCompletedHandler
         }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+        await _realtimeNotificationService.SendNotificationAsync(
+            "Payment completed",
+            $"Payment completed successfully. Amount: {notification.Amount}",
+            cancellationToken);
     }
 }

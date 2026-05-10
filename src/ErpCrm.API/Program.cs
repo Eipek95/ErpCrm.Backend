@@ -1,7 +1,10 @@
+using ErpCrm.API.Hubs;
 using ErpCrm.API.Middlewares;
 using ErpCrm.Application;
+using ErpCrm.Application.Common.Interfaces;
 using ErpCrm.Infrastructure;
 using ErpCrm.Infrastructure.BackgroundJobs;
+using ErpCrm.Infrastructure.Realtime;
 using ErpCrm.Persistence;
 using ErpCrm.Persistence.Context;
 using ErpCrm.Persistence.Seed;
@@ -9,9 +12,11 @@ using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Threading.RateLimiting;
@@ -32,6 +37,30 @@ builder.Host.UseSerilog((context, configuration) =>
 });
 
 builder.Services.AddControllers();
+
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
+    {
+        "application/json"
+    });
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
 builder.Services
     .AddHealthChecks()
     .AddSqlServer(
@@ -136,6 +165,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddSignalR();
+
+builder.Services.AddScoped<
+    IRealtimeNotificationService,
+    SignalRNotificationService>();
+
 var app = builder.Build();
 
 
@@ -159,7 +194,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseResponseCompression();
 app.UseAuthentication();
 app.UseHangfireDashboard("/hangfire");
 app.UseCurrentUserMiddleware();
@@ -205,6 +240,9 @@ app.MapHealthChecks("/health", new HealthCheckOptions
             }));
     }
 });
+
+app.MapHub<NotificationHub>("/hubs/notifications");
+
 app.MapControllers()
    .RequireRateLimiting("GlobalFixedPolicy");
 

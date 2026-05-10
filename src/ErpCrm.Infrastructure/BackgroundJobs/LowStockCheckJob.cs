@@ -9,13 +9,15 @@ public class LowStockCheckJob
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<LowStockCheckJob> _logger;
-
+    private readonly IRealtimeNotificationService _realtimeNotificationService;
     public LowStockCheckJob(
         IAppDbContext context,
-        ILogger<LowStockCheckJob> logger)
+        ILogger<LowStockCheckJob> logger,
+        IRealtimeNotificationService realtimeNotificationService)
     {
         _context = context;
         _logger = logger;
+        _realtimeNotificationService = realtimeNotificationService;
     }
 
     public async Task ExecuteAsync()
@@ -54,6 +56,10 @@ public class LowStockCheckJob
                     IsRead = false,
                     CreatedDate = DateTime.UtcNow
                 });
+
+                await _realtimeNotificationService.SendLowStockAlertAsync(
+                     stock.Product.Name,
+                     stock.Quantity - stock.ReservedQuantity);
             }
         }
 

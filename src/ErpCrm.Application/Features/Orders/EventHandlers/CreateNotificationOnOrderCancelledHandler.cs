@@ -9,10 +9,12 @@ public class CreateNotificationOnOrderCancelledHandler
     : INotificationHandler<OrderCancelledEvent>
 {
     private readonly IAppDbContext _context;
+    private readonly IRealtimeNotificationService _realtimeNotificationService;
 
-    public CreateNotificationOnOrderCancelledHandler(IAppDbContext context)
+    public CreateNotificationOnOrderCancelledHandler(IAppDbContext context, IRealtimeNotificationService realtimeNotificationService)
     {
         _context = context;
+        _realtimeNotificationService = realtimeNotificationService;
     }
 
     public async Task Handle(
@@ -29,5 +31,10 @@ public class CreateNotificationOnOrderCancelledHandler
         }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _realtimeNotificationService.SendNotificationAsync(
+            "Order cancelled",
+            $"{notification.OrderNumber} order has been cancelled.",
+            cancellationToken);
     }
 }
