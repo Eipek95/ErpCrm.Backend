@@ -12,7 +12,7 @@ namespace ErpCrm.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = AuthorizationPolicies.EmployeeOrAbove)]
+//[Authorize(Policy = AuthorizationPolicies.EmployeeOrAbove)]
 public class DashboardController : ControllerBase
 {
     private readonly IMediator _mediator;
