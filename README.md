@@ -5,11 +5,23 @@
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-blue)
 ![CQRS](https://img.shields.io/badge/Pattern-CQRS-green)
-![Cache](https://img.shields.io/badge/Cache-Distributed%20Cache-red)
+![Cache](https://img.shields.io/badge/Cache-Redis%20Distributed%20Cache-red)
 ![MediatR](https://img.shields.io/badge/MediatR-Event%20Driven-orange)
+![SignalR](https://img.shields.io/badge/Realtime-SignalR-brightgreen)
+![RabbitMQ](https://img.shields.io/badge/Message%20Broker-RabbitMQ-ff6600)
+![Hangfire](https://img.shields.io/badge/Jobs-Hangfire-blue)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
 Production-ready ERP / CRM Backend System built with modern .NET technologies.
+
+</div>
+
+---
+
+<div align="center">
+
+[🇬🇧 English Documentation](#-english-documentation)  
+[🇹🇷 Türkçe Dokümantasyon](#-türkçe-dokümantasyon)
 
 </div>
 
@@ -19,24 +31,18 @@ Production-ready ERP / CRM Backend System built with modern .NET technologies.
 
 ## 📌 About The Project
 
-This project is a production-ready ERP / CRM backend system developed using modern .NET technologies.
+This project is a production-oriented ERP / CRM backend system developed with modern .NET technologies.
 
-Main goals:
+It is designed to simulate real-world enterprise backend scenarios such as customer management, product and product variant management, warehouse-based stock tracking, order management, payment workflow, dashboard analytics, real-time notifications, background jobs, refresh token authentication, Redis distributed cache and RabbitMQ message publishing.
 
-* Build scalable backend architecture
-* Apply enterprise software patterns
-* Use CQRS + Domain Events + Distributed Cache architecture
-* Perform large-scale data testing
-* Simulate real ERP / CRM business scenarios
+This project is not only a CRUD-based backend. It also includes enterprise concepts such as CQRS, Domain Events, Redis Cache, SignalR, Hangfire, RabbitMQ publishing, rate limiting, request tracking, audit logging and large-scale data testing.
 
 ---
 
-# 🏗 Architectures
-
-## Clean Architecture
+## 🏗 Architecture
 
 ```txt
-Presentation
+API
 ↓
 Application
 ↓
@@ -47,103 +53,28 @@ Infrastructure
 Persistence
 ```
 
-## CQRS Architecture
+| Layer | Responsibility |
+|---|---|
+| API | Controllers, Middlewares, Hubs, Realtime services |
+| Application | CQRS commands/queries, interfaces, DTOs, validators |
+| Domain | Entities, enums, domain events, core business models |
+| Infrastructure | Redis, RabbitMQ, JWT, external services |
+| Persistence | DbContext, configurations, migrations, seed data |
+
+---
+
+## 🧱 Architectural Patterns
+
+### CQRS
 
 ```txt
-Commands → Write Operations
-Queries  → Read Operations
+Commands → Create / Update / Delete operations
+Queries  → Read / Reporting / Dashboard operations
 ```
 
-## Event Driven Architecture
+### Domain Events
 
-```txt
-CreateOrderCommand
-↓
-OrderCreatedEvent
-↓
-Handlers:
-- CreatePayment
-- CreateNotification
-- CreateAuditLog
-- InvalidateDashboardCache
-```
-
----
-
-# 🚀 Technologies
-
-* ASP.NET Core Web API
-* .NET 10
-* Entity Framework Core
-* MSSQL
-* MediatR
-* CQRS
-* FluentValidation
-* JWT Authentication
-* Distributed Cache
-* Memory Cache / Redis Ready
-* Serilog
-* Domain Events
-* Hangfire
-* Soft Delete
-* Global Exception Middleware
-* Fake Data Generator
-* Health Checks
-
----
-
-# 🏢 Enterprise Features
-
-```txt
-✔ Clean Architecture
-✔ CQRS
-✔ Domain Events
-✔ Distributed Cache
-✔ Cache Invalidation
-✔ Background Jobs
-✔ Health Checks
-✔ Fake Massive Data Engine
-✔ Audit Logging
-✔ Soft Delete
-✔ Stock Reservation Logic
-✔ Payment Workflow
-✔ Dashboard Analytics
-✔ SQL Index Optimization
-✔ Batch Processing
-✔ Event Driven Architecture
-```
-
----
-
-# 📊 Dashboard APIs
-
-```http
-GET /api/dashboard/stats
-GET /api/dashboard/monthly-sales
-GET /api/dashboard/top-products
-GET /api/dashboard/warehouse-stock
-GET /api/dashboard/recent-orders
-```
-
----
-
-# ⚡ Distributed Cache
-
-Dashboard endpoints are optimized with distributed cache.
-
-## Cached Endpoints
-
-| Endpoint        | Cache Key                       |
-| --------------- | ------------------------------- |
-| Dashboard Stats | dashboard:stats                 |
-| Monthly Sales   | dashboard:monthly-sales:{year}  |
-| Top Products    | dashboard:top-products:{count}  |
-| Warehouse Stock | dashboard:warehouse-stock       |
-| Recent Orders   | dashboard:recent-orders:{count} |
-
----
-
-# 🧠 Domain Events
+Implemented domain events:
 
 ```txt
 OrderCreatedEvent
@@ -151,456 +82,347 @@ OrderCancelledEvent
 PaymentCompletedEvent
 ```
 
----
-
-# 🧵 Background Jobs
-
-## Active Jobs
-
-* LowStockCheckJob
-* NotificationCleanupJob
-
----
-
-# 🩺 Health Checks
-
-```http
-GET /health
-```
-
----
-
-# 🚀 Performance Optimizations
-
-```txt
-✔ AsNoTracking queries
-✔ Batch save operations
-✔ Distributed cache
-✔ SQL indexing
-✔ Query optimization
-✔ Projection queries
-✔ Lightweight DTO usage
-```
-
----
-
-# 🔮 Future Improvements
-
-```txt
-✔ Redis Distributed Cache
-✔ RabbitMQ Integration
-✔ SignalR Notifications
-✔ Docker Support
-✔ Kubernetes Deployment
-✔ CI/CD Pipelines
-✔ Integration Tests
-✔ Multi Tenant Architecture
-✔ File Storage Service
-✔ Refresh Token Flow
-```
-
----
-
-# 👨‍💻 Purpose
-
-This project is being developed to improve knowledge in:
-
-* Enterprise software architecture
-* ERP / CRM business logic
-* High-performance backend systems
-* Event-driven architecture
-* Distributed system design
-* Production-grade API development
-
----
-
-# 🇹🇷 Türkçe Dokümantasyon
-
-## 📌 Proje Hakkında
-
-Bu proje modern .NET teknolojileri kullanılarak geliştirilmiş production odaklı bir ERP / CRM backend sistemidir.
-
-Amaç:
-
-* Ölçeklenebilir backend mimarisi oluşturmak
-* Gerçek enterprise mimari pratiklerini uygulamak
-* CQRS + Domain Events + Distributed Cache mimarisini kullanmak
-* Büyük veri yükleri altında performans testleri yapabilmek
-* Gerçek ERP/CRM senaryolarını modellemek
-
----
-
-# 🏗 Kullanılan Mimariler
-
-## Clean Architecture
-
-```txt
-Presentation
-↓
-Application
-↓
-Domain
-↓
-Infrastructure
-↓
-Persistence
-```
-
-## CQRS Architecture
-
-```txt
-Commands → Write Operations
-Queries  → Read Operations
-```
-
-## Event Driven Architecture
+Example flow:
 
 ```txt
 CreateOrderCommand
 ↓
 OrderCreatedEvent
 ↓
-Handlers:
-- CreatePayment
-- CreateNotification
-- CreateAuditLog
-- InvalidateDashboardCache
-```
-
----
-
-# 🚀 Kullanılan Teknolojiler
-
-* ASP.NET Core Web API
-* .NET 10
-* Entity Framework Core
-* MSSQL
-* MediatR
-* CQRS
-* FluentValidation
-* JWT Authentication
-* Distributed Cache
-* Memory Cache / Redis Ready
-* Serilog
-* Domain Events
-* Hangfire
-* Soft Delete
-* Global Exception Middleware
-* Fake Data Generator
-* Health Checks
-
----
-
-# 🏢 Enterprise Features
-
-## Implemented Enterprise Concepts
-
-```txt
-✔ Clean Architecture
-✔ CQRS
-✔ Domain Events
-✔ Distributed Cache
-✔ Cache Invalidation
-✔ Background Jobs
-✔ Health Checks
-✔ Fake Massive Data Engine
-✔ Audit Logging
-✔ Soft Delete
-✔ Stock Reservation Logic
-✔ Payment Workflow
-✔ Dashboard Analytics
-✔ SQL Index Optimization
-✔ Batch Processing
-✔ Event Driven Architecture
-```
-
----
-
-# ⚙️ System Flow
-
-## Order Creation Flow
-
-```txt
-CreateOrderCommand
-        ↓
-Stock Validation
-        ↓
-Stock Reservation
-        ↓
-Order Creation
-        ↓
-Payment Creation
-        ↓
-Notification Creation
-        ↓
-Audit Log Creation
-        ↓
-Domain Event Publish
-        ↓
-Dashboard Cache Invalidation
-```
-
----
-
-# 📊 Dashboard API'leri
-
-## Dashboard Endpoints
-
-```http
-GET /api/dashboard/stats
-GET /api/dashboard/monthly-sales
-GET /api/dashboard/top-products
-GET /api/dashboard/warehouse-stock
-GET /api/dashboard/recent-orders
-```
-
----
-
-# ⚡ Distributed Cache Sistemi
-
-Projede dashboard endpointleri distributed cache ile optimize edilmiştir.
-
-## Cache Kullanılan Endpointler
-
-| Endpoint        | Cache Key                       |
-| --------------- | ------------------------------- |
-| Dashboard Stats | dashboard:stats                 |
-| Monthly Sales   | dashboard:monthly-sales:{year}  |
-| Top Products    | dashboard:top-products:{count}  |
-| Warehouse Stock | dashboard:warehouse-stock       |
-| Recent Orders   | dashboard:recent-orders:{count} |
-
----
-
-# 🔥 Cache Invalidation
-
-Sipariş veya ödeme değişikliklerinde cache otomatik temizlenir.
-
-## Event Tetiklenen Cache Temizleme Yapıları
-
-```txt
-OrderCreatedEvent
-OrderCancelledEvent
-PaymentCompletedEvent
-```
-
-## Otomatik Temizlenen Cache'ler
-
-```txt
-- dashboard:stats
-- dashboard:monthly-sales
-- dashboard:top-products
-- dashboard:warehouse-stock
-- dashboard:recent-orders
-```
-
----
-
-# 🧠 Domain Events
-
-Sistem event-driven mimariye göre geliştirilmiştir.
-
-## Kullanılan Domain Events
-
-```txt
-OrderCreatedEvent
-OrderCancelledEvent
-PaymentCompletedEvent
-```
-
-## Örnek Event Flow
-
-```txt
-CreateOrderCommand
+Payment creation
 ↓
-OrderCreatedEvent
+Notification creation
 ↓
-CreatePaymentHandler
+Audit logging
 ↓
-CreateNotificationHandler
+Cache invalidation
 ↓
-CreateAuditLogHandler
+SignalR realtime event
 ↓
-InvalidateDashboardCacheHandler
+RabbitMQ message publish
 ```
 
 ---
 
-# 📦 Stock Management Logic
+## 🚀 Technologies
 
-The project includes real ERP stock management scenarios.
+- ASP.NET Core Web API
+- .NET 10
+- Entity Framework Core
+- SQL Server
+- MediatR
+- CQRS
+- FluentValidation
+- JWT Authentication
+- Refresh Token Authentication
+- Redis Distributed Cache
+- SignalR
+- RabbitMQ
+- Hangfire
+- Serilog
+- Health Checks
+- Rate Limiting
+- Response Compression
+- Swagger / OpenAPI
+- Clean Architecture
+- Domain Events
+- Soft Delete
+- Audit Logging
+- Request Logging
+- Fake Data Generator
 
-## Features
+---
+
+## 📦 Product & Product Variant Management
+
+The project includes a product structure suitable for ERP scenarios.
+
+### Product Features
+
+- Product name
+- Description
+- Price
+- Category relation
+- Active/passive status
+- Created / updated dates
+- Dashboard analytics integration
+- Order system integration
+- Stock system integration
+
+### Product Variant Features
+
+Product variants allow managing different combinations under the same product.
+
+```txt
+Product: T-Shirt
+Variants:
+- Black / Small
+- Black / Medium
+- White / Large
+```
+
+Supported logic:
+
+```txt
+✔ Variant-based stock
+✔ Variant-based price
+✔ Variant support in order items
+✔ ProductVariantId support in stock records
+✔ ProductVariantId support in order creation
+```
+
+---
+
+## 🏬 Warehouse & Stock Management
 
 ```txt
 ✔ Warehouse-based stock tracking
 ✔ Reserved stock calculation
-✔ Low stock detection
-✔ Stock movement history
-✔ Order-based stock reduction
+✔ Available stock calculation
 ✔ Product variant stock support
-✔ Critical stock monitoring
+✔ Stock movement records
+✔ Low stock detection
+✔ Stock validation before order creation
+✔ Low stock background job
+✔ Realtime low stock alerts with SignalR
+```
+
+Stock flow:
+
+```txt
+Order created
+↓
+Product stock checked
+↓
+Warehouse stock checked
+↓
+Available quantity calculated
+↓
+Stock quantity decreased
+↓
+StockMovement record created
+↓
+Dashboard cache invalidated
 ```
 
 ---
 
-# 📈 Analytics System
+## 🧾 Order Management
 
-Dashboard analytics APIs are optimized for high-volume data access.
-
-## Analytics Features
+Order creation flow:
 
 ```txt
-✔ Monthly sales analytics
-✔ Warehouse stock analytics
-✔ Top selling products
-✔ Recent order tracking
-✔ Revenue calculations
-✔ Active customer statistics
-✔ Pending payment monitoring
+Customer validation
+↓
+User validation
+↓
+Product validation
+↓
+Variant validation
+↓
+Stock validation
+↓
+Order creation
+↓
+Order item creation
+↓
+Stock decrease
+↓
+Stock movement creation
+↓
+Payment creation
+↓
+Notification creation
+↓
+Audit log creation
+↓
+Domain event publish
+↓
+Dashboard cache invalidation
+↓
+SignalR realtime event
+↓
+RabbitMQ message publish
+```
+
+Enterprise concepts used:
+
+```txt
+✔ CQRS
+✔ Domain Events
+✔ Stock validation
+✔ Payment workflow
+✔ Notification workflow
+✔ Audit logging
+✔ Redis cache invalidation
+✔ SignalR realtime notification
+✔ RabbitMQ publishing
 ```
 
 ---
 
-# 🧵 Background Job System
-
-The project includes scheduled background processing using Hangfire.
-
-## Active Jobs
-
-### LowStockCheckJob
+## 💳 Payment System
 
 ```txt
-Checks critical stock levels
-Creates notifications automatically
-Runs periodically
+✔ Payment entity
+✔ Payment status tracking
+✔ Paid / Pending logic
+✔ Payment completed domain event
+✔ Dashboard analytics integration
+✔ Cache invalidation after payment events
+✔ Realtime notification support
 ```
 
-### NotificationCleanupJob
+Future improvements:
 
 ```txt
-Cleans old notifications
-Applies soft delete logic
-Runs daily
+- iyzico / Stripe integration
+- Bank transfer tracking
+- Refund workflow
+- Invoice generation
 ```
 
 ---
 
-# 🩺 Health Monitoring
-
-The API contains health monitoring endpoints.
-
-## Health Endpoint
+## 📊 Dashboard Analytics
 
 ```http
-GET /health
+GET /api/dashboard/stats
+GET /api/dashboard/monthly-sales
+GET /api/dashboard/top-products
+GET /api/dashboard/warehouse-stock
+GET /api/dashboard/recent-orders
 ```
 
-## Checks
+Dashboard features:
 
 ```txt
-✔ SQL Server connectivity
-✔ API status
-✔ Cache availability
+✔ Total orders
+✔ Total sales
+✔ Active customers
+✔ Product count
+✔ Low stock count
+✔ Pending payments
+✔ Monthly sales analytics
+✔ Top selling products
+✔ Warehouse stock analytics
+✔ Recent orders
 ```
 
 ---
 
-# 🧪 Fake Data Engine
+## ⚡ Redis Distributed Cache
 
-Projede massive data testleri için gelişmiş fake data sistemi bulunmaktadır.
+| Endpoint | Cache Key |
+|---|---|
+| Dashboard Stats | dashboard:stats |
+| Monthly Sales | dashboard:monthly-sales:{year} |
+| Top Products | dashboard:top-products:{count} |
+| Warehouse Stock | dashboard:warehouse-stock |
+| Recent Orders | dashboard:recent-orders:{count} |
 
-## Özellikler
+Cache invalidation events:
 
-* Batch insert sistemi
-* Progress logging
-* Massive data generation
-* Relationship aware seed structure
-* Order / Stock / Payment generation
-* Admin user auto creation
-* Role based seed data
-
-## Örnek Seed Config
-
-```json
-"FakeData": {
-  "UserCount": 1000,
-  "CustomerCount": 2000,
-  "ProductCount": 3000,
-  "OrderCount": 10000,
-  "BatchSize": 1000
-}
+```txt
+OrderCreatedEvent
+OrderCancelledEvent
+PaymentCompletedEvent
 ```
 
 ---
 
-# 🚀 Performance Optimizations
-
-The backend is optimized for large-scale ERP operations.
-
-## Implemented Optimizations
+## 📡 SignalR Realtime System
 
 ```txt
-✔ AsNoTracking queries
-✔ Distributed cache
-✔ Batch save operations
-✔ Projection queries
-✔ SQL indexing
-✔ Query optimization
-✔ Event-based cache invalidation
-✔ Lightweight dashboard DTOs
-✔ Dapper-ready architecture
+✔ NotificationHub
+✔ RealtimeNotificationService
+✔ OnlineUserTracker
+✔ Realtime order notifications
+✔ Realtime low stock alerts
+✔ Realtime notification events
+✔ Online user count tracking
+✔ Realtime test controller
+```
+
+Active realtime events:
+
+```txt
+OrderCreated
+NotificationReceived
+LowStockAlert
+OnlineUserCountChanged
 ```
 
 ---
 
-# 🗄 SQL Index Optimization
-
-Critical database indexes were added for performance.
-
-## Indexed Tables
+## 🐇 RabbitMQ Message Publishing
 
 ```txt
-Orders
-OrderItems
-Products
-Customers
-Stocks
-Payments
-Notifications
-AuditLogs
-StockMovements
+✔ RabbitMQ Docker container
+✔ RabbitMQ Management UI
+✔ IMessageBusService abstraction
+✔ RabbitMqService implementation
+✔ OrderCreatedMessage DTO
+✔ PublishOrderCreatedToRabbitMqHandler
+✔ order-created-queue
+```
+
+Current RabbitMQ flow:
+
+```txt
+OrderCreatedEvent
+↓
+PublishOrderCreatedToRabbitMqHandler
+↓
+IMessageBusService
+↓
+RabbitMQ
+↓
+order-created-queue
+```
+
+Current status:
+
+```txt
+✔ Message publishing implemented
+❌ Consumer implementation postponed
 ```
 
 ---
 
-# 🔍 Logging & Observability
+## 🧵 Hangfire Background Jobs
 
-The project includes detailed structured logging.
-
-## Logging Features
+Storage:
 
 ```txt
-✔ Cache hit/miss logs
-✔ Batch save duration logs
-✔ Background job logs
-✔ Request logs
-✔ Error logs
-✔ Seeder performance logs
-✔ Domain event logs
+Hangfire SQL Server Storage
+```
+
+Active jobs:
+
+```txt
+LowStockCheckJob
+NotificationCleanupJob
+RefreshTokenCleanupJob
 ```
 
 ---
 
-# 🔐 Authentication & Authorization
+## 🔐 Authentication & Authorization
 
-## JWT Authentication
+Implemented authentication features:
 
 ```txt
-Bearer Token Authentication
+✔ JWT access token
+✔ Refresh token table
+✔ Refresh token rotation
+✔ Logout / revoke refresh token
+✔ Refresh token cleanup job
+✔ CurrentUser middleware
+✔ Role structure
 ```
 
-## Planned Role Structures
+Roles:
 
 ```txt
 Admin
@@ -608,7 +430,7 @@ Manager
 Employee
 ```
 
-## Planned Authorization Policies
+Authorization policies:
 
 ```txt
 AdminOnly
@@ -618,159 +440,610 @@ EmployeeOrAbove
 
 ---
 
-# 📁 Proje Yapısı
+## 📝 Logging & Observability
 
 ```txt
-src/
- ├── ErpCrm.API
- ├── ErpCrm.Application
- ├── ErpCrm.Domain
- ├── ErpCrm.Infrastructure
- └── ErpCrm.Persistence
+✔ Serilog console logging
+✔ Serilog file logging
+✔ RequestLoggingMiddleware
+✔ RequestLogs table
+✔ AuditLogs table
+✔ Cache hit/miss logs
+✔ Background job logs
+✔ Seeder performance logs
+✔ Domain event logs
 ```
 
 ---
 
-# 📌 Tamamlanan Sistemler
+## 🧪 Fake Data Engine & Large Scale Testing
 
-✅ Clean Architecture
-
-✅ CQRS
-
-✅ JWT Authentication
-
-✅ Global Exception Middleware
-
-✅ FluentValidation
-
-✅ Dashboard Analytics APIs
-
-✅ Distributed Cache
-
-✅ Cache Invalidation
-
-✅ Domain Events
-
-✅ Fake Data Generator
-
-✅ Audit Log System
-
-✅ Soft Delete
-
-✅ Stock Management
-
-✅ Payment Management
-
-✅ Hangfire Jobs
-
-✅ Health Checks
-
-✅ SQL Index Optimization
-
----
-
-# 🧪 Large Scale Data Testing
-
-The project is designed for massive ERP load simulations.
-
-## Planned Load Tests
+Seeded data:
 
 ```txt
-10K Orders
-50K Orders
-100K Orders
-1M+ Future Goal
+Users
+Roles
+Customers
+Categories
+Products
+ProductVariants
+Warehouses
+Stocks
+Orders
+OrderItems
+Payments
+Notifications
+AuditLogs
+StockMovements
 ```
 
-## Seeder Capabilities
+Large scale test:
 
 ```txt
-✔ Massive order generation
-✔ Warehouse stock generation
-✔ Fake payment generation
-✔ Notification generation
-✔ Relationship-aware data creation
-✔ Batch insert support
+✔ 100K order test completed
 ```
 
 ---
 
-# 🔮 Planned Enterprise Features
-
-## Future Improvements
-
-```txt
-✔ Redis Distributed Cache
-✔ RabbitMQ Integration
-✔ Outbox Pattern
-✔ SignalR Realtime Notifications
-✔ Docker Support
-✔ Kubernetes Deployment
-✔ CI/CD Pipelines
-✔ Integration Testing
-✔ Unit Testing
-✔ Multi Tenant Architecture
-✔ File Storage Service
-✔ Email Queue System
-✔ Refresh Token Flow
-✔ Permission-based Authorization
-```
-
----
-
-# ▶️ Projeyi Çalıştırma
-
-## Migration
+## ▶️ Run The Project
 
 ```bash
-add-migration InitialCreate
-update-database
+dotnet ef database update --project ErpCrm.Persistence --startup-project ErpCrm.API
+dotnet run --project ErpCrm.API
 ```
 
-## Run API
+Redis:
 
-```bash
-dotnet run
+```powershell
+docker run -d --name erpcrm-redis -p 6379:6379 redis
 ```
 
-## Swagger
+RabbitMQ:
+
+```powershell
+docker run -d --name erpcrm-rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+```
+
+RabbitMQ UI:
 
 ```txt
-https://localhost:5001/swagger
+http://localhost:15672
+Username: guest
+Password: guest
 ```
 
 ---
 
-# 🧠 Architectural Goals
-
-This project aims to simulate real-world enterprise backend development practices.
-
-## Main Goals
+## 🔮 Future Improvements
 
 ```txt
-✔ Enterprise backend architecture
-✔ Scalable ERP infrastructure
-✔ High-volume data optimization
-✔ Event-driven system design
-✔ Production-grade API development
-✔ Modern .NET backend practices
-✔ Distributed system preparation
+- RabbitMQ consumer implementation
+- Outbox Pattern
+- Docker Compose
+- Unit Tests
+- Integration Tests
+- CI/CD Pipeline
+- Email Service
+- File Upload System
+- Advanced Reporting
+- Redis Health Check
+- RabbitMQ Health Check
+- Multi Tenant Architecture
+- API Versioning
+- Frontend Integration
 ```
-
----
-
-# 👨‍💻 Project Purpose
-
-This project is being developed to improve knowledge in:
-
-* Enterprise software architecture
-* Scalable backend systems
-* ERP/CRM business logic
-* High-performance API development
-* Distributed system design
-* Event-driven architectures
-* Production-ready .NET backend development
 
 ---
 
 # 🇹🇷 Türkçe Dokümantasyon
+
+## 📌 Proje Hakkında
+
+Bu proje modern .NET teknolojileri kullanılarak geliştirilmiş production odaklı bir ERP / CRM backend sistemidir.
+
+Sistem gerçek dünyadaki enterprise backend senaryolarını simüle etmek için tasarlanmıştır.
+
+Bu kapsamda projede şu iş alanları modellenmiştir:
+
+- Müşteri yönetimi
+- Ürün ve ürün varyant yönetimi
+- Depo bazlı stok takibi
+- Sipariş yönetimi
+- Ödeme akışı
+- Dashboard analizleri
+- Gerçek zamanlı bildirimler
+- Arka plan işleri
+- Refresh token kimlik doğrulama
+- Redis distributed cache
+- RabbitMQ mesaj yayınlama
+- Request ve audit loglama
+- Büyük veri testi
+
+Bu proje sadece CRUD odaklı bir backend değildir. CQRS, Domain Events, Redis Cache, SignalR, Hangfire, RabbitMQ publishing, rate limiting ve request tracking gibi enterprise yapıları da içermektedir.
+
+---
+
+## 🏗 Mimari Yapı
+
+```txt
+API
+↓
+Application
+↓
+Domain
+↓
+Infrastructure
+↓
+Persistence
+```
+
+| Katman | Sorumluluk |
+|---|---|
+| API | Controller, middleware, hub ve realtime servisleri |
+| Application | CQRS command/query, interface, DTO ve validator yapıları |
+| Domain | Entity, enum, domain event ve temel iş modelleri |
+| Infrastructure | Redis, RabbitMQ, JWT ve dış servisler |
+| Persistence | DbContext, configuration, migration ve seed data |
+
+---
+
+## 🧱 Kullanılan Mimari Patternler
+
+### CQRS
+
+```txt
+Command → Create / Update / Delete işlemleri
+Query   → Listeleme / Raporlama / Dashboard işlemleri
+```
+
+### Domain Events
+
+Kullanılan eventler:
+
+```txt
+OrderCreatedEvent
+OrderCancelledEvent
+PaymentCompletedEvent
+```
+
+Örnek akış:
+
+```txt
+CreateOrderCommand
+↓
+OrderCreatedEvent
+↓
+Payment oluşturma
+↓
+Notification oluşturma
+↓
+Audit log oluşturma
+↓
+Cache temizleme
+↓
+SignalR realtime event
+↓
+RabbitMQ message publish
+```
+
+---
+
+## 🚀 Kullanılan Teknolojiler
+
+- ASP.NET Core Web API
+- .NET 10
+- Entity Framework Core
+- SQL Server
+- MediatR
+- CQRS
+- FluentValidation
+- JWT Authentication
+- Refresh Token Authentication
+- Redis Distributed Cache
+- SignalR
+- RabbitMQ
+- Hangfire
+- Serilog
+- Health Checks
+- Rate Limiting
+- Response Compression
+- Swagger / OpenAPI
+- Clean Architecture
+- Domain Events
+- Soft Delete
+- Audit Logging
+- Request Logging
+- Fake Data Generator
+
+---
+
+## 📦 Ürün ve Ürün Varyant Yönetimi
+
+Projede ürün yapısı ERP senaryolarına uygun şekilde kurgulanmıştır.
+
+### Ürün Özellikleri
+
+- Ürün adı
+- Açıklama
+- Fiyat
+- Kategori ilişkisi
+- Aktif/pasif durumu
+- Oluşturulma / güncellenme tarihleri
+- Dashboard analizleriyle entegrasyon
+- Sipariş sistemiyle entegrasyon
+- Stok sistemiyle entegrasyon
+
+### Ürün Varyant Özellikleri
+
+Ürün varyantları aynı ürün altında farklı kombinasyonların yönetilmesini sağlar.
+
+```txt
+Ürün: Tişört
+Varyantlar:
+- Siyah / Small
+- Siyah / Medium
+- Beyaz / Large
+```
+
+Desteklenen yapılar:
+
+```txt
+✔ Varyant bazlı stok
+✔ Varyant bazlı fiyat
+✔ OrderItem içinde varyant desteği
+✔ Stock kayıtlarında ProductVariantId desteği
+✔ Sipariş oluştururken ProductVariantId desteği
+```
+
+---
+
+## 🏬 Depo ve Stok Yönetimi
+
+```txt
+✔ Depo bazlı stok takibi
+✔ Rezerve stok hesaplama
+✔ Kullanılabilir stok hesaplama
+✔ Ürün varyantı bazlı stok desteği
+✔ Stok hareket kayıtları
+✔ Kritik stok tespiti
+✔ Sipariş öncesi stok doğrulama
+✔ Low stock background job
+✔ SignalR ile canlı düşük stok uyarıları
+```
+
+Stok akışı:
+
+```txt
+Sipariş oluşturulur
+↓
+Ürün stoğu kontrol edilir
+↓
+Depo stoğu kontrol edilir
+↓
+Kullanılabilir miktar hesaplanır
+↓
+Stok miktarı düşürülür
+↓
+StockMovement kaydı oluşturulur
+↓
+Dashboard cache temizlenir
+```
+
+---
+
+## 🧾 Sipariş Yönetimi
+
+Sipariş oluşturma akışı:
+
+```txt
+Müşteri doğrulama
+↓
+Kullanıcı doğrulama
+↓
+Ürün doğrulama
+↓
+Varyant doğrulama
+↓
+Stok doğrulama
+↓
+Sipariş oluşturma
+↓
+Sipariş kalemleri oluşturma
+↓
+Stok düşürme
+↓
+StockMovement oluşturma
+↓
+Payment oluşturma
+↓
+Notification oluşturma
+↓
+Audit log oluşturma
+↓
+Domain event publish
+↓
+Dashboard cache invalidation
+↓
+SignalR realtime event
+↓
+RabbitMQ message publish
+```
+
+Sipariş akışında kullanılan enterprise yapılar:
+
+```txt
+✔ CQRS
+✔ Domain Events
+✔ Stok doğrulama
+✔ Payment workflow
+✔ Notification workflow
+✔ Audit logging
+✔ Redis cache invalidation
+✔ SignalR realtime notification
+✔ RabbitMQ publishing
+```
+
+---
+
+## 💳 Ödeme Sistemi
+
+```txt
+✔ Payment entity
+✔ Payment status tracking
+✔ Paid / Pending mantığı
+✔ PaymentCompletedEvent
+✔ Dashboard analytics entegrasyonu
+✔ Payment event sonrası cache invalidation
+✔ Realtime notification desteği
+```
+
+---
+
+## 📊 Dashboard Analytics
+
+```http
+GET /api/dashboard/stats
+GET /api/dashboard/monthly-sales
+GET /api/dashboard/top-products
+GET /api/dashboard/warehouse-stock
+GET /api/dashboard/recent-orders
+```
+
+Dashboard özellikleri:
+
+```txt
+✔ Toplam sipariş
+✔ Toplam satış
+✔ Aktif müşteri sayısı
+✔ Ürün sayısı
+✔ Düşük stok sayısı
+✔ Bekleyen ödeme sayısı
+✔ Aylık satış analizi
+✔ En çok satan ürünler
+✔ Depo stok analizi
+✔ Son siparişler
+```
+
+---
+
+## ⚡ Redis Distributed Cache
+
+| Endpoint | Cache Key |
+|---|---|
+| Dashboard Stats | dashboard:stats |
+| Monthly Sales | dashboard:monthly-sales:{year} |
+| Top Products | dashboard:top-products:{count} |
+| Warehouse Stock | dashboard:warehouse-stock |
+| Recent Orders | dashboard:recent-orders:{count} |
+
+Cache temizleyen eventler:
+
+```txt
+OrderCreatedEvent
+OrderCancelledEvent
+PaymentCompletedEvent
+```
+
+---
+
+## 📡 SignalR Realtime Sistemi
+
+```txt
+✔ NotificationHub
+✔ RealtimeNotificationService
+✔ OnlineUserTracker
+✔ Canlı sipariş bildirimleri
+✔ Canlı düşük stok uyarıları
+✔ Canlı notification eventleri
+✔ Online kullanıcı sayısı takibi
+✔ Realtime test controller
+```
+
+Aktif realtime eventler:
+
+```txt
+OrderCreated
+NotificationReceived
+LowStockAlert
+OnlineUserCountChanged
+```
+
+---
+
+## 🐇 RabbitMQ Message Publishing
+
+```txt
+✔ RabbitMQ Docker container
+✔ RabbitMQ Management UI
+✔ IMessageBusService abstraction
+✔ RabbitMqService implementation
+✔ OrderCreatedMessage DTO
+✔ PublishOrderCreatedToRabbitMqHandler
+✔ order-created-queue
+```
+
+Mevcut RabbitMQ akışı:
+
+```txt
+OrderCreatedEvent
+↓
+PublishOrderCreatedToRabbitMqHandler
+↓
+IMessageBusService
+↓
+RabbitMQ
+↓
+order-created-queue
+```
+
+Mevcut durum:
+
+```txt
+✔ Message publishing tamamlandı
+❌ Consumer implementation sonraya bırakıldı
+```
+
+---
+
+## 🧵 Hangfire Background Jobs
+
+Storage:
+
+```txt
+Hangfire SQL Server Storage
+```
+
+Aktif joblar:
+
+```txt
+LowStockCheckJob
+NotificationCleanupJob
+RefreshTokenCleanupJob
+```
+
+---
+
+## 🔐 Authentication & Authorization
+
+Uygulanan authentication özellikleri:
+
+```txt
+✔ JWT access token
+✔ Refresh token tablosu
+✔ Refresh token rotation
+✔ Logout / refresh token revoke
+✔ Refresh token cleanup job
+✔ CurrentUser middleware
+✔ Role yapısı
+```
+
+Roller:
+
+```txt
+Admin
+Manager
+Employee
+```
+
+Authorization policies:
+
+```txt
+AdminOnly
+ManagerOrAdmin
+EmployeeOrAbove
+```
+
+---
+
+## 📝 Logging & Observability
+
+```txt
+✔ Serilog console logging
+✔ Serilog file logging
+✔ RequestLoggingMiddleware
+✔ RequestLogs tablosu
+✔ AuditLogs tablosu
+✔ Cache hit/miss logları
+✔ Background job logları
+✔ Seeder performance logları
+✔ Domain event logları
+```
+
+---
+
+## 🧪 Fake Data Engine ve Büyük Veri Testi
+
+Seed edilen veriler:
+
+```txt
+Users
+Roles
+Customers
+Categories
+Products
+ProductVariants
+Warehouses
+Stocks
+Orders
+OrderItems
+Payments
+Notifications
+AuditLogs
+StockMovements
+```
+
+Büyük veri testi:
+
+```txt
+✔ 100K order testi tamamlandı
+```
+
+---
+
+## ▶️ Projeyi Çalıştırma
+
+```bash
+dotnet ef database update --project ErpCrm.Persistence --startup-project ErpCrm.API
+dotnet run --project ErpCrm.API
+```
+
+Redis:
+
+```powershell
+docker run -d --name erpcrm-redis -p 6379:6379 redis
+```
+
+RabbitMQ:
+
+```powershell
+docker run -d --name erpcrm-rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+```
+
+RabbitMQ UI:
+
+```txt
+http://localhost:15672
+Username: guest
+Password: guest
+```
+
+---
+
+## 🔮 Gelecek Geliştirmeler
+
+```txt
+- RabbitMQ consumer implementation
+- Outbox Pattern
+- Docker Compose
+- Unit Tests
+- Integration Tests
+- CI/CD Pipeline
+- Email Service
+- File Upload System
+- Advanced Reporting
+- Redis Health Check
+- RabbitMQ Health Check
+- Multi Tenant Architecture
+- API Versioning
+- Frontend Integration
+```
