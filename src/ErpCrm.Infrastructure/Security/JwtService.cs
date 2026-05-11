@@ -7,7 +7,7 @@ using ErpCrm.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ErpCrm.Infrastructure.Security;
+namespace ErpCrm.Infrastructure.Services;
 
 public class JwtService : IJwtService
 {
@@ -18,7 +18,9 @@ public class JwtService : IJwtService
         _configuration = configuration;
     }
 
-    public string GenerateAccessToken(User user, IList<string> roles)
+    public string GenerateAccessToken(
+        User user,
+        IList<string> roles)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
 
@@ -31,18 +33,19 @@ public class JwtService : IJwtService
 
         foreach (var role in roles)
         {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(
+                new Claim(ClaimTypes.Role, role));
         }
 
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
+            Encoding.UTF8.GetBytes(
+                jwtSettings["SecretKey"]!));
 
         var credentials = new SigningCredentials(
             key,
             SecurityAlgorithms.HmacSha256);
 
-        var expires = DateTime.UtcNow.AddMinutes(
-            Convert.ToDouble(jwtSettings["AccessTokenExpirationMinutes"]));
+        var expires = GetAccessTokenExpiryDate();
 
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],
@@ -51,7 +54,8 @@ public class JwtService : IJwtService
             expires: expires,
             signingCredentials: credentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new JwtSecurityTokenHandler()
+            .WriteToken(token);
     }
 
     public string GenerateRefreshToken()
@@ -59,9 +63,18 @@ public class JwtService : IJwtService
         var randomBytes = new byte[64];
 
         using var rng = RandomNumberGenerator.Create();
+
         rng.GetBytes(randomBytes);
 
         return Convert.ToBase64String(randomBytes);
+    }
+
+    public DateTime GetAccessTokenExpiryDate()
+    {
+        var minutes = Convert.ToDouble(
+            _configuration["Jwt:AccessTokenExpirationMinutes"]);
+
+        return DateTime.UtcNow.AddMinutes(minutes);
     }
 
     public DateTime GetRefreshTokenExpiryDate()

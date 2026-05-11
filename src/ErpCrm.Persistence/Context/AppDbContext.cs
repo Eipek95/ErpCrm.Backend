@@ -43,6 +43,9 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<ProductImage> ProductImages => Set<ProductImage>();
 
     public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     public override async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
