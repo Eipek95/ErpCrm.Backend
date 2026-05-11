@@ -3,42 +3,39 @@ using ErpCrm.Application.Common.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ErpCrm.Application.Features.Auth.Commands.Logout;
+namespace ErpCrm.Application.Features.Auth.Logout;
 
-public class LogoutCommandHandler
-    : IRequestHandler<LogoutCommand, Result<bool>>
+public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result<bool>>
 {
     private readonly IAppDbContext _context;
-    private readonly ICurrentUserService _currentUserService;
+    private readonly ICurrentRequestService _currentRequestService;
 
     public LogoutCommandHandler(
         IAppDbContext context,
-        ICurrentUserService currentUserService)
+        ICurrentRequestService currentRequestService)
     {
         _context = context;
-        _currentUserService = currentUserService;
+        _currentRequestService = currentRequestService;
     }
 
     public async Task<Result<bool>> Handle(
         LogoutCommand request,
         CancellationToken cancellationToken)
     {
-        if (!_currentUserService.IsAuthenticated ||
-            _currentUserService.UserId is null)
-        {
-            return Result<bool>.Fail("Unauthorized", 401);
-        }
-
-        var user = await _context.Users
-            .FirstOrDefaultAsync(x => x.Id == _currentUserService.UserId.Value,
+        var refreshToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(
+                x => x.Token == request.RefreshToken,
                 cancellationToken);
 
-        if (user is null)
-            return Result<bool>.NotFound("User not found");
+        if (refreshToken is null)
+            return Result<bool>.Fail("Invalid refresh token", 401);
 
-        user.RefreshToken = null;
-        user.RefreshTokenExpiresAt = null;
-        user.UpdatedDate = DateTime.UtcNow;
+        if (refreshToken.IsRevoked)
+            return Result<bool>.Ok(true, "Token already revoked");
+
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        refreshToken.RevokedByIp = _currentRequestService.GetIpAddress();
+        refreshToken.UpdatedDate = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -1,4 +1,5 @@
-﻿using ErpCrm.Application.Common.Interfaces;
+﻿using ErpCrm.Application.Common.Constants;
+using ErpCrm.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +7,7 @@ namespace ErpCrm.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize(Roles = "Admin")]
+//[Authorize(Policy = AuthorizationPolicies.AdminOnly)]
 public class FakeDataController : ControllerBase
 {
     private readonly IFakeDataSeeder _fakeDataSeeder;

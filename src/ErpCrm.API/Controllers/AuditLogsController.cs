@@ -1,14 +1,17 @@
-﻿using ErpCrm.Application.Features.AuditLogs.Commands.CreateAuditLog;
+﻿using ErpCrm.Application.Common.Constants;
+using ErpCrm.Application.Features.AuditLogs.Commands.CreateAuditLog;
 using ErpCrm.Application.Features.AuditLogs.Commands.DeleteAuditLog;
 using ErpCrm.Application.Features.AuditLogs.Commands.UpdateAuditLog;
 using ErpCrm.Application.Features.AuditLogs.Queries.GetAuditLogById;
 using ErpCrm.Application.Features.AuditLogs.Queries.GetAuditLogs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace ErpCrm.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = AuthorizationPolicies.AdminOnly)]
 public class AuditLogsController : ControllerBase
 {
     private readonly IMediator _mediator;

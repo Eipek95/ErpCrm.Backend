@@ -1,6 +1,7 @@
 using ErpCrm.API.Hubs;
 using ErpCrm.API.Middlewares;
 using ErpCrm.Application;
+using ErpCrm.Application.Common.Constants;
 using ErpCrm.Application.Common.Interfaces;
 using ErpCrm.Infrastructure;
 using ErpCrm.Infrastructure.BackgroundJobs;
@@ -9,7 +10,6 @@ using ErpCrm.Persistence;
 using ErpCrm.Persistence.Context;
 using ErpCrm.Persistence.Seed;
 using Hangfire;
-using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -65,6 +65,7 @@ builder.Services
     .AddHealthChecks()
     .AddSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")!);
+
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
@@ -104,14 +105,14 @@ builder.Services
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
+    options.AddPolicy(AuthorizationPolicies.AdminOnly, policy =>
+        policy.RequireRole(Roles.Admin));
 
-    options.AddPolicy("ManagerOrAdmin", policy =>
-        policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy(AuthorizationPolicies.ManagerOrAdmin, policy =>
+        policy.RequireRole(Roles.Admin, Roles.Manager));
 
-    options.AddPolicy("EmployeeOrAbove", policy =>
-        policy.RequireRole("Admin", "Manager", "Employee"));
+    options.AddPolicy(AuthorizationPolicies.EmployeeOrAbove, policy =>
+        policy.RequireRole(Roles.Admin, Roles.Manager, Roles.Employee));
 });
 
 builder.Services.AddRateLimiter(options =>
@@ -212,6 +213,14 @@ RecurringJob.AddOrUpdate<NotificationCleanupJob>(
     "notification-cleanup",
     job => job.ExecuteAsync(),
     Cron.Daily);
+
+
+// Her gün eski refresh token kayıtlarını temizleyen arka plan işi
+RecurringJob.AddOrUpdate<RefreshTokenCleanupJob>(
+    "refresh-token-cleanup",
+    job => job.ExecuteAsync(),
+    Cron.Daily);
+
 
 //sağlık kontrolü endpointi
 app.MapHealthChecks("/health", new HealthCheckOptions

@@ -1,9 +1,8 @@
 ﻿using ErpCrm.Application.Features.Auth.Commands.Login;
-using ErpCrm.Application.Features.Auth.Commands.Logout;
 using ErpCrm.Application.Features.Auth.Commands.RefreshToken;
 using ErpCrm.Application.Features.Auth.Commands.Register;
+using ErpCrm.Application.Features.Auth.Logout;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ErpCrm.API.Controllers;
@@ -40,11 +39,12 @@ public class AuthController : ControllerBase
         return StatusCode(result.StatusCode, result);
     }
 
-    [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> Logout(
+    [FromBody] LogoutCommand command)
     {
-        var result = await _mediator.Send(new LogoutCommand());
+        var result = await _mediator.Send(command);
+
         return StatusCode(result.StatusCode, result);
     }
 }

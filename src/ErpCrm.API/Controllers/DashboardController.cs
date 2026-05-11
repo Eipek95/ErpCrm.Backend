@@ -1,4 +1,5 @@
-﻿using ErpCrm.Application.Features.Dashboard.Queries.GetDashboardStats;
+﻿using ErpCrm.Application.Common.Constants;
+using ErpCrm.Application.Features.Dashboard.Queries.GetDashboardStats;
 using ErpCrm.Application.Features.Dashboard.Queries.GetMonthlySales;
 using ErpCrm.Application.Features.Dashboard.Queries.GetRecentOrders;
 using ErpCrm.Application.Features.Dashboard.Queries.GetTopProducts;
@@ -11,7 +12,7 @@ namespace ErpCrm.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize]
+[Authorize(Policy = AuthorizationPolicies.EmployeeOrAbove)]
 public class DashboardController : ControllerBase
 {
     private readonly IMediator _mediator;
